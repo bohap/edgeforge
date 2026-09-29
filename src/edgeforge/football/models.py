@@ -92,3 +92,64 @@ class MatchTeamStats(TimestampMixin, ProvenanceMixin, Base):
     ppda_defensive_actions: Mapped[int | None]
     deep_completions: Mapped[int | None]
     available_at: Mapped[datetime]
+
+
+class Player(IdMixin, TimestampMixin, Base):
+    __tablename__ = "player"
+    __table_args__ = {"schema": SCHEMA}
+
+    sport_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("ref.sport.id"))
+    name: Mapped[str]
+
+
+class PlayerMatchStats(TimestampMixin, ProvenanceMixin, Base):
+    """One player's appearance in one match (only players who played appear)."""
+
+    __tablename__ = "player_match_stats"
+    __table_args__ = {"schema": SCHEMA}
+
+    match_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(f"{SCHEMA}.match.id"), primary_key=True)
+    player_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(f"{SCHEMA}.player.id"), primary_key=True, index=True
+    )
+    team_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(f"{SCHEMA}.team.id"))
+    position: Mapped[str]
+    started: Mapped[bool]
+    minutes: Mapped[int] = mapped_column(SmallInteger)
+    goals: Mapped[int] = mapped_column(SmallInteger)
+    own_goals: Mapped[int] = mapped_column(SmallInteger)
+    shots: Mapped[int] = mapped_column(SmallInteger)
+    xg: Mapped[float | None]
+    assists: Mapped[int] = mapped_column(SmallInteger)
+    xa: Mapped[float | None]
+    key_passes: Mapped[int] = mapped_column(SmallInteger)
+    yellow_cards: Mapped[int] = mapped_column(SmallInteger)
+    red_cards: Mapped[int] = mapped_column(SmallInteger)
+    xg_chain: Mapped[float | None]
+    xg_buildup: Mapped[float | None]
+    available_at: Mapped[datetime]
+
+
+class Shot(IdMixin, TimestampMixin, ProvenanceMixin, Base):
+    __tablename__ = "shot"
+    __table_args__ = (
+        UniqueConstraint("provider_id", "external_id"),
+        {"schema": SCHEMA},
+    )
+
+    external_id: Mapped[str]
+    match_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(f"{SCHEMA}.match.id"), index=True)
+    team_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(f"{SCHEMA}.team.id"))
+    player_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(f"{SCHEMA}.player.id"), index=True)
+    assister_name: Mapped[str | None]
+    minute: Mapped[int] = mapped_column(SmallInteger)
+    x: Mapped[float]
+    y: Mapped[float]
+    xg: Mapped[float]
+    result: Mapped[str]
+    situation: Mapped[str]
+    shot_type: Mapped[str]
+    last_action: Mapped[str | None]
+    is_goal: Mapped[bool]
+    is_penalty: Mapped[bool]
+    available_at: Mapped[datetime]
