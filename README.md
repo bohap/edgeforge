@@ -68,3 +68,16 @@ uv run edgeforge-worker ops        # only the "ops" queue
 Enqueue with `edgeforge.jobs.enqueue.enqueue_in_session(session, "ops:heartbeat", ...)`: the
 job commits or rolls back together with the rest of the transaction. Wrap job bodies in
 `edgeforge.ops.job_runs.run_tracked` so each run is recorded in `ops.job_run`.
+
+## Ingestion
+
+```bash
+uv run edgeforge backfill understat --seasons 2021-2026            # all six leagues
+uv run edgeforge backfill understat --seasons 2026 --leagues EPL   # one league-season
+uv run edgeforge-worker ingest-understat                            # process the queue
+```
+
+A league job fetches and normalizes the league, then queues a match job for every finished
+match that has no player data yet. All Understat jobs share one lock, so only one request
+stream runs at a time (`EDGEFORGE_UNDERSTAT_REQUESTS_PER_SECOND`, default 0.4). Re-running a
+backfill is safe: unchanged responses are skipped and waiting jobs are not duplicated.

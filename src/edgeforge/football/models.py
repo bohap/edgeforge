@@ -74,7 +74,12 @@ class MatchResult(TimestampMixin, ProvenanceMixin, Base):
 
 
 class MatchTeamStats(TimestampMixin, ProvenanceMixin, Base):
-    """One team's statistics in one match. Missing statistics are NULL, never zero."""
+    """One team's statistics in one match. Missing statistics are NULL, never zero.
+
+    ``xg`` is the provider's team figure. For Understat it is not the sum of shot xG: shots in
+    one sequence (e.g. rebounds) are combined, so summing ``core.shot.xg`` can overstate team
+    xG by 0.5+ in a single match. Use this column for team-level features.
+    """
 
     __tablename__ = "match_team_stats"
     __table_args__ = (

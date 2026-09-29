@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", pattern=r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$")
     log_format: LogFormat = LogFormat.JSON
     database_url: str = "postgresql+psycopg://edgeforge:edgeforge@localhost:5432/edgeforge"
+    understat_requests_per_second: float = Field(default=0.4, gt=0, le=5)
 
 
 @lru_cache(maxsize=1)

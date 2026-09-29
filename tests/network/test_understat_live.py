@@ -38,6 +38,6 @@ def test_league_and_one_match_parse(fetcher: HttpFetcher, league: League) -> Non
     assert played
     assert unknown_fields(payload) - EXPECTED_UNMODELLED == set()
     assert unknown_fields(match) - EXPECTED_UNMODELLED == set()
-    # Shot xG sums can differ from the match total by a few thousandths (observed in the
-    # Bundesliga and Ligue 1), so consistency checks use a 0.01 tolerance.
-    assert sum(s.xg for s in match.shots.h) == pytest.approx(played[0].xg.h, abs=0.01)
+    # Understat's team xG combines shots in one sequence (rebounds), so it can be lower than
+    # the sum of shot xG; it is never higher beyond rounding.
+    assert sum(s.xg for s in match.shots.h) >= played[0].xg.h - 0.01
