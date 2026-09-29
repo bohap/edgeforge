@@ -7,10 +7,12 @@ requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.16",
     "httpx>=0.28",
+    "numpy>=2.3",
     "procrastinate==3.10.0",
     "psycopg[binary]>=3.2.10",
     "pydantic>=2.11",
     "pydantic-settings>=2.10",
+    "scipy>=1.16",
     "sqlalchemy>=2.0.43",
     "structlog>=25.4",
 ]
@@ -26,6 +28,7 @@ dev = [
     "pytest>=8.4",
     "pytest-cov>=7.0",
     "ruff>=0.13",
+    "scipy-stubs>=1.18.1.1",
 ]
 
 [build-system]
@@ -46,6 +49,9 @@ select = [
 ]
 # RUF012: SQLAlchemy declarative class attributes (__table_args__ etc.) are mutable by design.
 ignore = ["RUF012"]
+
+# Model docstrings use standard notation (λ, μ, ρ, α).
+allowed-confusables = ["α", "λ", "μ", "ρ", "σ"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["edgeforge", "tests"]
