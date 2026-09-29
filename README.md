@@ -81,3 +81,13 @@ A league job fetches and normalizes the league, then queues a match job for ever
 match that has no player data yet. All Understat jobs share one lock, so only one request
 stream runs at a time (`EDGEFORGE_UNDERSTAT_REQUESTS_PER_SECOND`, default 0.4). Re-running a
 backfill is safe: unchanged responses are skipped and waiting jobs are not duplicated.
+
+## Data quality
+
+```bash
+uv run edgeforge dq     # run all checks; exit code 1 if any error-level issue is open
+```
+
+Checks live in `src/edgeforge/quality/checks.py` (one SQL query each). Results are kept in
+`ops.dq_issue`: one open issue per check and match, refreshed on each run and resolved
+automatically once the problem is gone. The `ops:dq_checks` task runs the same checks.

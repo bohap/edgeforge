@@ -22,3 +22,14 @@ def heartbeat(note: str = "") -> dict[str, Any]:
         return {"note": note, "database_time": database_time.isoformat()}
 
     return run_tracked(default_session_factory(), "ops:heartbeat", {"note": note}, work)
+
+
+@blueprint.task(name="dq_checks", queue="ops")
+def dq_checks() -> dict[str, Any]:
+    """Run all data-quality checks and sync ops.dq_issue."""
+    from edgeforge.quality.checks import run_checks
+
+    def work(session: Session) -> dict[str, Any]:
+        return dict(run_checks(session))
+
+    return run_tracked(default_session_factory(), "ops:dq_checks", {}, work)

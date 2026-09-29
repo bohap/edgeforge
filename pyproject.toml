@@ -52,6 +52,7 @@ known-first-party = ["edgeforge", "tests"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
+"src/edgeforge/cli.py" = ["T201"]
 
 [tool.mypy]
 python_version = "3.14"
