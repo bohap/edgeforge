@@ -3,13 +3,14 @@
 import uuid
 from datetime import datetime
 from enum import StrEnum
+from functools import lru_cache
 from typing import Any
 
 from sqlalchemy import DateTime, Engine, Enum, MetaData, Uuid, create_engine, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
-from edgeforge.core.config import Settings
+from edgeforge.core.config import Settings, get_settings
 from edgeforge.core.ids import new_id
 
 NAMING_CONVENTION = {
@@ -57,3 +58,9 @@ def create_db_engine(settings: Settings, **kwargs: Any) -> Engine:
 
 def create_session_factory(engine: Engine) -> sessionmaker[Session]:
     return sessionmaker(bind=engine, expire_on_commit=False)
+
+
+@lru_cache(maxsize=1)
+def default_session_factory() -> sessionmaker[Session]:
+    """Process-wide session factory for the configured database (workers, API)."""
+    return create_session_factory(create_db_engine(get_settings()))

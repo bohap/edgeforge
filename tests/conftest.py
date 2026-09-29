@@ -34,7 +34,9 @@ def reset_database(engine: Engine) -> None:
     with engine.begin() as conn:
         for schema in SCHEMAS:
             conn.execute(text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
-        conn.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
+        # Procrastinate's objects and alembic_version live in public; the test DB is disposable.
+        conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
+        conn.execute(text("CREATE SCHEMA public"))
 
 
 @pytest.fixture(scope="session")

@@ -52,3 +52,18 @@ uv run alembic upgrade head --sql      # print the SQL without touching the data
 Database tests need `EDGEFORGE_TEST_DATABASE_URL` pointing at a disposable database (its
 `ref` and `ops` schemas are dropped and recreated). Without it they are skipped locally;
 CI sets `EDGEFORGE_REQUIRE_DB_TESTS=1` so they can never be skipped there.
+
+## Background jobs
+
+Jobs run on [Procrastinate](https://procrastinate.readthedocs.io/), which stores the queue
+in PostgreSQL. Its schema is applied by our Alembic migrations from a vendored copy
+(`migrations/sql/`), pinned to the exact package version.
+
+```bash
+uv run edgeforge-worker            # all queues
+uv run edgeforge-worker ops        # only the "ops" queue
+```
+
+Enqueue with `edgeforge.jobs.enqueue.enqueue_in_session(session, "ops:heartbeat", ...)`: the
+job commits or rolls back together with the rest of the transaction. Wrap job bodies in
+`edgeforge.ops.job_runs.run_tracked` so each run is recorded in `ops.job_run`.
