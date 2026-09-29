@@ -4,9 +4,8 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import partial
-from typing import Any
 
-from sqlalchemy.dialects.postgresql import Insert, insert
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from edgeforge.catalog.entity_map import resolve_or_create
@@ -24,6 +23,7 @@ from edgeforge.football.models import (
     Team,
     TeamSeason,
 )
+from edgeforge.football.upsert import upsert_if_changed
 from edgeforge.providers.understat.client import League, Resource, parse_league
 from edgeforge.providers.understat.schemas import (
     PARSER_VERSION,
@@ -205,19 +205,12 @@ def _upsert_result(
         "observed_at": payload.fetched_at,
         "available_at": available_at(fixture.kickoff_at, payload.fetched_at),
     }
-    result = insert(MatchResult).values(
-        match_id=match_id, home_goals=home_goals, away_goals=away_goals, **provenance
-    )
-    session.execute(
-        result.on_conflict_do_update(
-            index_elements=[MatchResult.match_id],
-            set_={
-                **{k: result.excluded[k] for k in ("home_goals", "away_goals")},
-                **_touch(result),
-            },
-            where=(MatchResult.home_goals.is_distinct_from(result.excluded.home_goals))
-            | (MatchResult.away_goals.is_distinct_from(result.excluded.away_goals)),
-        )
+    upsert_if_changed(
+        session,
+        MatchResult,
+        {"match_id": match_id},
+        {"home_goals": home_goals, "away_goals": away_goals},
+        provenance,
     )
 
     sides = (
@@ -226,30 +219,18 @@ def _upsert_result(
     )
     for ref, is_home, goals, xg in sides:
         entry = history.get((ref.id, fixture.kickoff_at))
-        values = {
-            "goals": goals,
-            "xg": xg,
-            "npxg": entry.npxg if entry else None,
-            "ppda_passes": entry.ppda.att if entry else None,
-            "ppda_defensive_actions": entry.ppda.defence if entry else None,
-            "deep_completions": entry.deep if entry else None,
-        }
-        stmt = insert(MatchTeamStats).values(
-            match_id=match_id, team_id=team_ids[ref.id], is_home=is_home, **values, **provenance
+        upsert_if_changed(
+            session,
+            MatchTeamStats,
+            {"match_id": match_id, "team_id": team_ids[ref.id]},
+            {
+                "is_home": is_home,
+                "goals": goals,
+                "xg": xg,
+                "npxg": entry.npxg if entry else None,
+                "ppda_passes": entry.ppda.att if entry else None,
+                "ppda_defensive_actions": entry.ppda.defence if entry else None,
+                "deep_completions": entry.deep if entry else None,
+            },
+            provenance,
         )
-        changed = None
-        for column in values:
-            clause = getattr(MatchTeamStats, column).is_distinct_from(stmt.excluded[column])
-            changed = clause if changed is None else changed | clause
-        session.execute(
-            stmt.on_conflict_do_update(
-                index_elements=[MatchTeamStats.match_id, MatchTeamStats.team_id],
-                set_={**{k: stmt.excluded[k] for k in values}, **_touch(stmt)},
-                where=changed,
-            )
-        )
-
-
-def _touch(stmt: Insert) -> dict[str, Any]:
-    """Provenance columns to refresh when a row's values change."""
-    return {name: stmt.excluded[name] for name in ("source_raw_id", "observed_at", "available_at")}
