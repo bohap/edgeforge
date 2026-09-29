@@ -6,6 +6,7 @@ workers and the per-process rate limiter is the effective global limit.
 
 import uuid
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import exists, select
@@ -150,3 +151,20 @@ def matches_missing_details(session: Session, provider_id: uuid.UUID, league_key
         .order_by(Match.kickoff_at)
     ).all()
     return [int(external_id) for external_id in rows]
+
+
+# European league seasons start in August; from July onwards the new season is current.
+SEASON_START_MONTH = 7
+
+
+def current_season(now: datetime) -> int:
+    """Understat season key (starting year) that is in progress or about to start at ``now``."""
+    return now.year if now.month >= SEASON_START_MONTH else now.year - 1
+
+
+def queue_current_season_refresh(
+    session: Session, now: datetime, leagues: tuple[League, ...] = tuple(League)
+) -> int:
+    """Queue a league job per league for the current season. Returns how many were queued."""
+    season = current_season(now)
+    return sum(enqueue_league(session, league, season) is not None for league in leagues)
