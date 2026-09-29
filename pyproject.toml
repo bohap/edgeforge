@@ -61,7 +61,7 @@ plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers --strict-config"
+addopts = "-ra --strict-markers --strict-config -m 'not network'"
 markers = [
     "db: needs a PostgreSQL database (EDGEFORGE_TEST_DATABASE_URL)",
     "network: calls external services; never run in CI",
