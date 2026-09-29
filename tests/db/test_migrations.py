@@ -57,9 +57,15 @@ def test_downgrade_to_base_and_upgrade_again(migrated_engine: Engine, database_u
 
     command.downgrade(config, "base")
     remaining = set(inspect(migrated_engine).get_schema_names()) & set(SCHEMAS)
+    public_leftovers = [
+        t
+        for t in inspect(migrated_engine).get_table_names(schema="public")
+        if t != "alembic_version"
+    ]
     command.upgrade(config, "head")
 
     assert remaining == set()
+    assert public_leftovers == []
     assert {"sport", "competition", "season"} <= set(
         inspect(migrated_engine).get_table_names(schema="ref")
     )
