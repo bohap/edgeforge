@@ -91,3 +91,15 @@ uv run edgeforge dq     # run all checks; exit code 1 if any error-level issue i
 Checks live in `src/edgeforge/quality/checks.py` (one SQL query each). Results are kept in
 `ops.dq_issue`: one open issue per check and match, refreshed on each run and resolved
 automatically once the problem is gone. The `ops:dq_checks` task runs the same checks.
+
+## Schedules
+
+Periodic tasks run inside any worker that serves the `ops` queue (Procrastinate defers each
+tick once, even with several workers):
+
+| Task | Cron (UTC) | What it does |
+|------|------------|--------------|
+| `ingest:understat_refresh_current_season` | `17 */6 * * *` | queues league jobs for the current season; they queue match jobs for newly finished matches |
+| `ops:dq_checks` | `41 * * * *` | runs the data-quality checks |
+
+For production, run `edgeforge-worker ops ingest-understat` (or one worker per queue).

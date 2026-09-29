@@ -24,12 +24,13 @@ def heartbeat(note: str = "") -> dict[str, Any]:
     return run_tracked(default_session_factory(), "ops:heartbeat", {"note": note}, work)
 
 
+@blueprint.periodic(cron="41 * * * *")
 @blueprint.task(name="dq_checks", queue="ops")
-def dq_checks() -> dict[str, Any]:
-    """Run all data-quality checks and sync ops.dq_issue."""
+def dq_checks(timestamp: int) -> dict[str, Any]:
+    """Hourly: run all data-quality checks and sync ops.dq_issue."""
     from edgeforge.quality.checks import run_checks
 
     def work(session: Session) -> dict[str, Any]:
         return dict(run_checks(session))
 
-    return run_tracked(default_session_factory(), "ops:dq_checks", {}, work)
+    return run_tracked(default_session_factory(), "ops:dq_checks", {"timestamp": timestamp}, work)

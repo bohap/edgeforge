@@ -1,5 +1,6 @@
 """Procrastinate tasks for ingestion."""
 
+from datetime import UTC, datetime
 from functools import lru_cache
 from typing import Any
 
@@ -48,4 +49,25 @@ def understat_match(match_id: int) -> dict[str, Any]:
 
     return run_tracked(
         default_session_factory(), understat.MATCH_TASK, {"match_id": match_id}, work
+    )
+
+
+@blueprint.periodic(cron="17 */6 * * *")
+@blueprint.task(name="understat_refresh_current_season", queue="ops")
+def understat_refresh_current_season(timestamp: int) -> dict[str, Any]:
+    """Every 6 hours: queue league jobs for the current season of every Understat league.
+
+    League jobs then queue match jobs for newly finished matches, so this is the only schedule
+    needed for Understat. Unchanged league responses cost one request and no writes.
+    """
+    now = datetime.fromtimestamp(timestamp, UTC)
+
+    def work(session: Session) -> dict[str, Any]:
+        return {"queued": understat.queue_current_season_refresh(session, now)}
+
+    return run_tracked(
+        default_session_factory(),
+        "ingest:understat_refresh_current_season",
+        {"timestamp": timestamp},
+        work,
     )
