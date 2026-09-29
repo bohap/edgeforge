@@ -5,8 +5,11 @@ description = "Sports betting intelligence platform: data ingestion, probability
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.16",
+    "psycopg[binary]>=3.2.10",
     "pydantic>=2.11",
     "pydantic-settings>=2.10",
+    "sqlalchemy>=2.0.43",
     "structlog>=25.4",
 ]
 
@@ -35,7 +38,11 @@ src = ["src", "tests"]
 select = [
     "E", "W", "F", "I", "B", "UP", "SIM", "C4", "PT", "RUF", "S", "DTZ", "T20", "N",
 ]
-ignore = []
+# RUF012: SQLAlchemy declarative class attributes (__table_args__ etc.) are mutable by design.
+ignore = ["RUF012"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["edgeforge", "tests"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
