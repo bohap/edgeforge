@@ -15,7 +15,8 @@ Stage 1 covers football, with Understat as the first data provider.
 
 ```bash
 uv sync                      # create .venv and install dependencies
-uv run pytest                # tests (network-marked tests are skipped in CI)
+uv run pytest                # tests (skips live network tests)
+uv run pytest -m network     # live checks against real providers (manual only)
 uv run ruff check .          # lint
 uv run ruff format .         # format
 uv run mypy                  # type check (strict)
