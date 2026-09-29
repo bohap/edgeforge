@@ -39,10 +39,28 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: edgeforge
+          POSTGRES_PASSWORD: edgeforge
+          POSTGRES_DB: edgeforge_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U edgeforge"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      EDGEFORGE_TEST_DATABASE_URL: postgresql+psycopg://edgeforge:edgeforge@localhost:5432/edgeforge_test
+      EDGEFORGE_REQUIRE_DB_TESTS: "1"
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - run: uv sync --locked
+      - name: Render migrations as SQL (offline mode)
+        run: uv run alembic upgrade head --sql > /dev/null
       - run: uv run pytest -m "not network" --cov --cov-report=term-missing

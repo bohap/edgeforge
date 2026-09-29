@@ -37,3 +37,18 @@ docs/adr/           architecture decision records
 ## Documentation
 
 - [ADR 0001: technology stack](docs/adr/0001-technology-stack.md)
+
+## Database
+
+Migrations live in `migrations/` (Alembic). Autogenerate output is only a draft: review
+each migration as SQL before committing.
+
+```bash
+export EDGEFORGE_DATABASE_URL=postgresql+psycopg://user:pass@localhost:5432/edgeforge
+uv run alembic upgrade head            # apply
+uv run alembic upgrade head --sql      # print the SQL without touching the database
+```
+
+Database tests need `EDGEFORGE_TEST_DATABASE_URL` pointing at a disposable database (its
+`ref` and `ops` schemas are dropped and recreated). Without it they are skipped locally;
+CI sets `EDGEFORGE_REQUIRE_DB_TESTS=1` so they can never be skipped there.
