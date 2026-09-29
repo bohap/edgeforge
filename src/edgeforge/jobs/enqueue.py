@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 DEFAULT_QUEUE = "default"
@@ -50,3 +51,32 @@ def enqueue_in_session(
         },
     ).scalar_one()
     return job_id
+
+
+def enqueue_unless_queued(
+    session: Session,
+    task_name: str,
+    *,
+    queueing_lock: str,
+    args: dict[str, Any] | None = None,
+    queue: str = DEFAULT_QUEUE,
+    priority: int = 0,
+    lock: str | None = None,
+) -> int | None:
+    """Enqueue unless a job with the same queueing lock is already waiting. Returns the job id
+    or ``None`` when skipped. Uses a savepoint so the caller's transaction stays usable."""
+    try:
+        with session.begin_nested():
+            return enqueue_in_session(
+                session,
+                task_name,
+                args=args,
+                queue=queue,
+                priority=priority,
+                lock=lock,
+                queueing_lock=queueing_lock,
+            )
+    except IntegrityError as exc:
+        if "procrastinate_jobs_queueing_lock_idx" not in str(exc):
+            raise
+        return None

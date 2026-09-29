@@ -6,8 +6,10 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import Connection, Engine, create_engine, text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
+from edgeforge.core.config import get_settings
+from edgeforge.core.db import default_session_factory
 from edgeforge.schema import SCHEMAS
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -62,3 +64,39 @@ def db_session(db_connection: Connection) -> Iterator[Session]:
     session = Session(bind=db_connection, join_transaction_mode="create_savepoint")
     yield session
     session.close()
+
+
+def clear_committed_data(engine: Engine) -> None:
+    """Remove rows written by tests that commit (jobs, runs, and everything normalized)."""
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM procrastinate_events"))
+        conn.execute(text("DELETE FROM procrastinate_jobs"))
+        conn.execute(
+            text(
+                "TRUNCATE ops.job_run, core.shot, core.player_match_stats, core.player, "
+                "core.match_team_stats, core.match_result, core.match, core.team_season, "
+                "core.team, raw.raw_payload, raw.raw_blob, ref.provider_entity_map, ref.season, "
+                "ref.competition, ref.data_provider, ref.sport CASCADE"
+            )
+        )
+
+
+@pytest.fixture
+def committed(migrated_engine: Engine) -> Iterator[sessionmaker[Session]]:
+    """Session factory whose commits are real; the database is cleaned before and after."""
+    clear_committed_data(migrated_engine)
+    yield sessionmaker(bind=migrated_engine, expire_on_commit=False)
+    clear_committed_data(migrated_engine)
+
+
+@pytest.fixture
+def worker_settings(database_url: str, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    monkeypatch.setenv("EDGEFORGE_DATABASE_URL", database_url)
+    get_settings.cache_clear()
+    default_session_factory.cache_clear()
+    yield
+    if default_session_factory.cache_info().currsize:
+        bind = default_session_factory().kw["bind"]
+        bind.dispose()
+    get_settings.cache_clear()
+    default_session_factory.cache_clear()

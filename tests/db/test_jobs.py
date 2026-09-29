@@ -1,15 +1,13 @@
-from collections.abc import Iterator
 from importlib.metadata import version
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
 import pytest
-from sqlalchemy import Engine, delete, select, text
+from sqlalchemy import Engine, select, text
 from sqlalchemy.orm import Session, sessionmaker
 
-from edgeforge.core.config import get_settings
-from edgeforge.core.db import create_session_factory, default_session_factory
+from edgeforge.core.config import Settings, get_settings
 from edgeforge.jobs.app import PROCRASTINATE_SCHEMA_VERSION, create_app, libpq_url
 from edgeforge.jobs.enqueue import enqueue_in_session
 from edgeforge.ops.job_runs import run_tracked
@@ -18,34 +16,6 @@ from edgeforge.ops.models import JobRun, JobStatus
 pytestmark = pytest.mark.db
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-
-def _clear_jobs(engine: Engine) -> None:
-    with engine.begin() as conn:
-        conn.execute(text("DELETE FROM procrastinate_events"))
-        conn.execute(text("DELETE FROM procrastinate_jobs"))
-        conn.execute(delete(JobRun))
-
-
-@pytest.fixture
-def committed(migrated_engine: Engine) -> Iterator[sessionmaker[Session]]:
-    """Session factory whose commits are real; cleans up jobs and runs afterwards."""
-    _clear_jobs(migrated_engine)
-    yield create_session_factory(migrated_engine)
-    _clear_jobs(migrated_engine)
-
-
-@pytest.fixture
-def worker_settings(database_url: str, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    monkeypatch.setenv("EDGEFORGE_DATABASE_URL", database_url)
-    get_settings.cache_clear()
-    default_session_factory.cache_clear()
-    yield
-    if default_session_factory.cache_info().currsize:
-        bind = default_session_factory().kw["bind"]
-        bind.dispose()
-    get_settings.cache_clear()
-    default_session_factory.cache_clear()
 
 
 def test_vendored_schema_matches_pinned_package_version() -> None:
@@ -139,3 +109,11 @@ def test_run_tracked_rolls_back_work_on_failure(committed: sessionmaker[Session]
     with committed() as session:
         jobs = session.execute(text("SELECT count(*) FROM procrastinate_jobs")).scalar_one()
     assert jobs == 0
+
+
+def test_apps_for_different_databases_keep_task_names() -> None:
+    create_app(Settings(_env_file=None, database_url="postgresql+psycopg://a@h/one"))
+    app = create_app(Settings(_env_file=None, database_url="postgresql+psycopg://a@h/two"))
+
+    assert {"ops:heartbeat", "ingest:understat_league", "ingest:understat_match"} <= set(app.tasks)
+    assert not any(name.count(":") > 1 for name in app.tasks)

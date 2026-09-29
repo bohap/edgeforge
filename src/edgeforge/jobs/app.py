@@ -4,6 +4,7 @@ import procrastinate
 from sqlalchemy.engine import make_url
 
 from edgeforge.core.config import Settings
+from edgeforge.ingestion import tasks as ingestion_tasks
 from edgeforge.ops import tasks as ops_tasks
 
 # Procrastinate's schema is applied by our Alembic migrations from a vendored copy of this
@@ -18,9 +19,15 @@ def libpq_url(sqlalchemy_url: str) -> str:
     )
 
 
+# Tasks are registered exactly once, on a module-level app without a database. Registering
+# blueprints again would rename their tasks a second time (add_tasks_from mutates them).
+_registry = procrastinate.App(connector=procrastinate.PsycopgConnector())
+_registry.add_tasks_from(ops_tasks.blueprint, namespace="ops")
+_registry.add_tasks_from(ingestion_tasks.blueprint, namespace="ingest")
+
+
 def create_app(settings: Settings) -> procrastinate.App:
-    app = procrastinate.App(
-        connector=procrastinate.PsycopgConnector(conninfo=libpq_url(settings.database_url))
+    """The task registry bound to the configured database."""
+    return _registry.with_connector(
+        procrastinate.PsycopgConnector(conninfo=libpq_url(settings.database_url))
     )
-    app.add_tasks_from(ops_tasks.blueprint, namespace="ops")
-    return app

@@ -16,6 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
+edgeforge = "edgeforge.cli:main"
 edgeforge-worker = "edgeforge.jobs.worker:main"
 
 [dependency-groups]
