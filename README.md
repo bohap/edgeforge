@@ -103,3 +103,15 @@ tick once, even with several workers):
 | `ops:dq_checks` | `41 * * * *` | runs the data-quality checks |
 
 For production, run `edgeforge-worker ops ingest-understat` (or one worker per queue).
+
+## Backtesting
+
+```bash
+uv run edgeforge backtest --competition EPL --from 2025-10-15 --to 2026-06-01 \
+    [--half-life 180] [--xg-weight 0.7]
+```
+
+Walk-forward: each match is predicted as of 60 minutes before kickoff with a model refitted
+weekly from `features.played_matches`, so only information public at that moment is used.
+The report compares log loss, Brier score and calibration error (ECE) with a base-rate model
+for 1X2, BTTS and over/under 2.5.

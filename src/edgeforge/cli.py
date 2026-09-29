@@ -2,11 +2,17 @@
 
 import argparse
 import sys
+from datetime import UTC, datetime
 
+from sqlalchemy import select
+
+from edgeforge.backtest.walk_forward import run_backtest
+from edgeforge.catalog.models import Competition
 from edgeforge.core.config import get_settings
 from edgeforge.core.db import default_session_factory
 from edgeforge.core.logging import configure_logging, get_logger
 from edgeforge.ingestion.understat import enqueue_league
+from edgeforge.models.football_goals.model import GoalModelConfig
 from edgeforge.ops.models import Severity
 from edgeforge.providers.understat.client import League
 from edgeforge.quality.checks import CHECKS, run_checks
@@ -39,7 +45,17 @@ def build_parser() -> argparse.ArgumentParser:
     backfill.add_argument("--seasons", type=parse_seasons, required=True)
     backfill.add_argument("--leagues", type=parse_leagues, default=list(League))
     commands.add_parser("dq", help="run data-quality checks and print open issues per check")
+    backtest = commands.add_parser("backtest", help="walk-forward backtest of the goal model")
+    backtest.add_argument("--competition", required=True, help="competition code, e.g. EPL")
+    backtest.add_argument("--from", dest="start", type=_utc_date, required=True)
+    backtest.add_argument("--to", dest="end", type=_utc_date, required=True)
+    backtest.add_argument("--half-life", type=float, default=180.0)
+    backtest.add_argument("--xg-weight", type=float, default=0.7)
     return parser
+
+
+def _utc_date(value: str) -> datetime:
+    return datetime.fromisoformat(value).replace(tzinfo=UTC)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -47,6 +63,8 @@ def main(argv: list[str] | None = None) -> int:
     configure_logging(get_settings())
     if args.command == "dq":
         return run_dq()
+    if args.command == "backtest":
+        return run_backtest_command(args)
     queued = skipped = 0
     with default_session_factory().begin() as session:
         for league in args.leagues:
@@ -56,6 +74,22 @@ def main(argv: list[str] | None = None) -> int:
                 else:
                     queued += 1
     log.info("backfill_queued", provider=args.provider, queued=queued, already_queued=skipped)
+    return 0
+
+
+def run_backtest_command(args: argparse.Namespace) -> int:
+    config = GoalModelConfig(half_life_days=args.half_life, xg_weight=args.xg_weight)
+    with default_session_factory()() as session:
+        competition = session.scalars(
+            select(Competition.id).where(Competition.code == args.competition)
+        ).one()
+        result = run_backtest(session, competition, args.start, args.end, config=config)
+    print(f"{'market':14} {'n':>5} {'logloss':>8} {'base':>8} {'brier':>7} {'base':>7} {'ece':>6}")
+    for s in result.scores():
+        print(
+            f"{s.market:14} {s.predictions:5} {s.model_log_loss:8.4f} {s.base_log_loss:8.4f} "
+            f"{s.model_brier:7.4f} {s.base_brier:7.4f} {s.model_ece:6.3f}"
+        )
     return 0
 
 
