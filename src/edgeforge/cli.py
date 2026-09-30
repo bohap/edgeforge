@@ -1,4 +1,4 @@
-"""Command line: ``edgeforge compare``, ``edgeforge backfill``, ``edgeforge backtest``, ``dq``."""
+"""Command line: ``edgeforge serve``, ``compare``, ``backfill``, ``backtest`` and ``dq``."""
 
 import argparse
 import sys
@@ -87,6 +87,9 @@ def build_parser() -> argparse.ArgumentParser:
     compare.add_argument(
         "--as-of", type=_utc_date, help="use only data known at this date (default: now)"
     )
+    serve = commands.add_parser("serve", help="run the web app and its API")
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8000)
     return parser
 
 
@@ -111,6 +114,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_backtest_command(args)
     if args.command == "compare":
         return run_compare(args)
+    if args.command == "serve":
+        return run_serve(args)
     queued = skipped = 0
     with default_session_factory().begin() as session:
         for league in args.leagues:
@@ -216,6 +221,15 @@ def run_compare(args: argparse.Namespace) -> int:
                 report = f"{kickoff:%a %Y-%m-%d %H:%M} UTC  {report}"
             reports.append(report)
     print(f"\n\n{'=' * 70}\n\n".join(reports))
+    return 0
+
+
+def run_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    from edgeforge.api.app import create_app
+
+    uvicorn.run(create_app(), host=args.host, port=args.port, log_config=None)
     return 0
 
 

@@ -54,6 +54,22 @@ estimated probabilities (1X2, both teams to score, over 2.5, most likely score) 
 model fitted on the competition. `--as-of 2026-03-01` shows what was known on that date.
 Team names match ignoring case and by word prefix ("man city", "forest").
 
+The same comparison is served as JSON for the web app:
+
+```bash
+uv run edgeforge serve          # http://127.0.0.1:8000/api/docs
+```
+
+| Endpoint | Returns |
+|----------|---------|
+| `GET /api/competitions` | enabled competitions |
+| `GET /api/competitions/{code}/fixtures?days=7` | upcoming fixtures |
+| `GET /api/competitions/{code}/teams` | teams with a match in the last 400 days |
+| `GET /api/competitions/{code}/compare?home=ID&away=ID&last=5&last=10` | the comparison |
+
+`as_of` works on fixtures and compare as on the command line. Model fits are cached per
+competition and hour.
+
 Keep the data fresh first (`edgeforge-worker ingest-understat` with the schedule below).
 
 ## Database

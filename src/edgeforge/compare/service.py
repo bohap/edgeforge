@@ -2,7 +2,7 @@
 
 import uuid
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -53,6 +53,8 @@ class MatchComparison:
     estimate: Estimate | None
     home_last_played: datetime | None = None
     away_last_played: datetime | None = None
+    home_recent: list[TeamMatch] = field(default_factory=list)
+    away_recent: list[TeamMatch] = field(default_factory=list)
 
 
 def fit_ratings(
@@ -95,6 +97,8 @@ def compare_match(
         estimate=estimate(ratings, home_team_id, away_team_id) if ratings else None,
         home_last_played=home_side[0].kickoff_at if home_side else None,
         away_last_played=away_side[0].kickoff_at if away_side else None,
+        home_recent=home_side[: max(windows, default=0)],
+        away_recent=away_side[: max(windows, default=0)],
     )
 
 
