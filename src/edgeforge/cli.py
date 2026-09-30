@@ -8,12 +8,15 @@ from sqlalchemy import select
 
 from edgeforge.backtest.walk_forward import run_backtest
 from edgeforge.catalog.models import Competition
+from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS
 from edgeforge.core.config import get_settings
 from edgeforge.core.db import default_session_factory
 from edgeforge.core.logging import configure_logging, get_logger
+from edgeforge.ingestion.football_data import enqueue_season
 from edgeforge.ingestion.understat import enqueue_league
 from edgeforge.models.football_goals.model import GoalModelConfig
 from edgeforge.ops.models import Severity
+from edgeforge.providers.football_data_uk.client import DIVISIONS
 from edgeforge.providers.understat.client import League
 from edgeforge.quality.checks import CHECKS, run_checks
 
@@ -41,7 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="edgeforge")
     commands = parser.add_subparsers(dest="command", required=True)
     backfill = commands.add_parser("backfill", help="queue historical ingestion jobs")
-    backfill.add_argument("provider", choices=["understat"])
+    backfill.add_argument("provider", choices=["understat", "football-data"])
     backfill.add_argument("--seasons", type=parse_seasons, required=True)
     backfill.add_argument("--leagues", type=parse_leagues, default=list(League))
     commands.add_parser("dq", help="run data-quality checks and print open issues per check")
@@ -69,7 +72,15 @@ def main(argv: list[str] | None = None) -> int:
     with default_session_factory().begin() as session:
         for league in args.leagues:
             for season in args.seasons:
-                if enqueue_league(session, league, season) is None:
+                if args.provider == "understat":
+                    job = enqueue_league(session, league, season)
+                else:
+                    code = UNDERSTAT_COMPETITIONS[league.value].code
+                    if code not in DIVISIONS:
+                        log.warning("no_football_data_division", league=league.value)
+                        continue
+                    job = enqueue_season(session, code, season)
+                if job is None:
                     skipped += 1
                 else:
                     queued += 1
