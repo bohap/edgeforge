@@ -70,6 +70,7 @@ def clear_committed_data(engine: Engine) -> None:
     """Remove rows written by tests that commit (jobs, runs, and everything normalized)."""
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM procrastinate_events"))
+        conn.execute(text("DELETE FROM procrastinate_periodic_defers"))
         conn.execute(text("DELETE FROM procrastinate_jobs"))
         conn.execute(
             text(

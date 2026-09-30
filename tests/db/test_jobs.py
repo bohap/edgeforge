@@ -1,9 +1,12 @@
+import asyncio
+from datetime import UTC, datetime
 from importlib.metadata import version
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
 import pytest
+from procrastinate import periodic
 from sqlalchemy import Engine, select, text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -74,7 +77,7 @@ def test_worker_runs_committed_job_and_records_it(
         status = session.execute(
             text("SELECT status::text FROM procrastinate_jobs WHERE id = :id"), {"id": job_id}
         ).scalar_one()
-        run = session.scalars(select(JobRun)).one()
+        run = session.scalars(select(JobRun).where(JobRun.job_name == "ops:heartbeat")).one()
     assert status == "succeeded"
     assert run.job_name == "ops:heartbeat"
     assert run.status is JobStatus.SUCCEEDED
@@ -117,3 +120,34 @@ def test_apps_for_different_databases_keep_task_names() -> None:
 
     assert {"ops:heartbeat", "ingest:understat_league", "ingest:understat_match"} <= set(app.tasks)
     assert not any(name.count(":") > 1 for name in app.tasks)
+
+
+def test_periodic_tick_defers_through_the_bound_app(
+    committed: sessionmaker[Session], worker_settings: None
+) -> None:
+    """Regression: when a periodic tick was due, the deferrer used the tasks' original,
+    never-opened app, raised "App was not open" and stopped the worker."""
+    app = create_app(get_settings())
+    tick = datetime(2030, 1, 1, 0, 41, 30, tzinfo=UTC).timestamp()
+
+    async def defer_due_ticks() -> None:
+        async with app.open_async():
+            deferrer = periodic.PeriodicDeferrer(registry=app.periodic_registry)
+            await deferrer.defer_jobs(jobs_to_defer=deferrer.get_previous_tasks(at=tick))
+
+    asyncio.run(defer_due_ticks())
+
+    with committed() as session:
+        deferred = (
+            session.execute(text("SELECT task_name FROM procrastinate_periodic_defers"))
+            .scalars()
+            .all()
+        )
+        queued = (
+            session.execute(text("SELECT task_name FROM procrastinate_jobs WHERE status = 'todo'"))
+            .scalars()
+            .all()
+        )
+    assert "ops:dq_checks" in deferred
+    assert "ops:dq_checks" in queued
+    assert app.tasks["ops:dq_checks"].blueprint is app
