@@ -121,6 +121,14 @@ against de-vigged closing prices and simulate flat 1-unit bets wherever the mode
 value at the opening or closing price exceeds 2%, 5% or 10%, with ROI, its standard error and
 closing-line value.
 
+Two more diagnostics:
+
+- `--recalibrate`: walk-forward power recalibration (`p ∝ p^a·e^b`), fitted only on earlier
+  settled predictions.
+- `--market market_average --blend-test 2024-07-01`: fits `p ∝ opening^w1 · model^w2`
+  walk-forward and scores it from the given date. A model weight near zero means the model
+  adds no information beyond the market's opening prices; any new model must beat this gate.
+
 ## Historical odds
 
 ```bash

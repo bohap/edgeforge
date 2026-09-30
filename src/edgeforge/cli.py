@@ -6,7 +6,8 @@ from datetime import UTC, datetime
 
 from sqlalchemy import select
 
-from edgeforge.backtest.market import compare_with_market
+from edgeforge.backtest.market import compare_with_market, market_blend_test
+from edgeforge.backtest.recalibrate import recalibrate
 from edgeforge.backtest.walk_forward import run_backtest
 from edgeforge.catalog.models import Competition
 from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS
@@ -56,6 +57,15 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--half-life", type=float, default=180.0)
     backtest.add_argument("--xg-weight", type=float, default=0.7)
     backtest.add_argument(
+        "--recalibrate", action="store_true", help="apply walk-forward power recalibration"
+    )
+    backtest.add_argument(
+        "--blend-test",
+        type=_utc_date,
+        metavar="HOLDOUT_START",
+        help="with --market: test whether the model adds information beyond opening prices",
+    )
+    backtest.add_argument(
         "--market",
         metavar="BOOKMAKER",
         help="also score against this bookmaker's prices, e.g. market_average or pinnacle",
@@ -101,6 +111,8 @@ def run_backtest_command(args: argparse.Namespace) -> int:
             select(Competition.id).where(Competition.code == args.competition)
         ).one()
         result = run_backtest(session, competition, args.start, args.end, config=config)
+    if args.recalibrate:
+        result = recalibrate(result)
     print(f"{'market':14} {'n':>5} {'logloss':>8} {'base':>8} {'brier':>7} {'base':>7} {'ece':>6}")
     for s in result.scores():
         print(
@@ -123,6 +135,17 @@ def run_backtest_command(args: argparse.Namespace) -> int:
                     f"  {sim.price_type:8} {sim.min_edge:5.2f} {sim.bets:5} {sim.roi:+7.3f} "
                     f"{sim.roi_standard_error:6.3f} {sim.average_odds:5.2f} {clv:>7}"
                 )
+    if args.market and args.blend_test:
+        with default_session_factory()() as session:
+            blends = market_blend_test(session, result, args.blend_test, bookmaker=args.market)
+        print(f"\nDoes the model add information beyond {args.market} opening prices?")
+        for b in blends:
+            print(
+                f"  {b.market:14} n={b.matches} model {b.model_log_loss:.4f}  "
+                f"opening {b.opening_log_loss:.4f}  blend {b.blend_log_loss:.4f}  "
+                f"closing {b.closing_log_loss:.4f}  weights market={b.market_weight:.2f} "
+                f"model={b.model_weight:.2f}"
+            )
     return 0
 
 
