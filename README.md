@@ -37,6 +37,7 @@ docs/adr/           architecture decision records
 
 ## Documentation
 
+- [Roadmap: what is built now and what is deferred](docs/ROADMAP.md)
 - [ADR 0001: technology stack](docs/adr/0001-technology-stack.md)
 
 ## Database
