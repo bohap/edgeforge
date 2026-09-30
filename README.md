@@ -116,6 +116,11 @@ weekly from `features.played_matches`, so only information public at that moment
 The report compares log loss, Brier score and calibration error (ECE) with a base-rate model
 for 1X2, BTTS and over/under 2.5.
 
+Add `--market market_average` (or `pinnacle`, `bet365`, ...) to score the same predictions
+against de-vigged closing prices and simulate flat 1-unit bets wherever the model's expected
+value at the opening or closing price exceeds 2%, 5% or 10%, with ROI, its standard error and
+closing-line value.
+
 ## Historical odds
 
 ```bash
