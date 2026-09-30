@@ -13,8 +13,11 @@ the benchmark gives the market slightly more information than the model had.
 import math
 import uuid
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 import numpy as np
+from numpy.typing import NDArray
+from scipy.optimize import minimize
 from sqlalchemy.orm import Session
 
 from edgeforge.backtest.metrics import log_loss
@@ -158,3 +161,106 @@ def _simulate(
         average_odds=odds_sum / bets if bets else 0.0,
         closing_line_value=float(np.mean(clv)) if clv else None,
     )
+
+
+@dataclass(frozen=True, slots=True)
+class BlendTest:
+    """Does the model add information beyond the market's opening prices?
+
+    Walk-forward fit of ``p ∝ opening^w_market · model^w_model`` on settled earlier matches,
+    scored on matches from ``holdout_start``. A model weight near zero means the model adds
+    nothing the opening line did not already contain.
+    """
+
+    market: str
+    matches: int
+    model_log_loss: float
+    opening_log_loss: float
+    blend_log_loss: float
+    closing_log_loss: float
+    market_weight: float
+    model_weight: float
+
+
+def market_blend_test(
+    session: Session,
+    result: BacktestResult,
+    holdout_start: datetime,
+    *,
+    bookmaker: str = "market_average",
+    min_history: int = 200,
+    refit_every: int = 50,
+) -> list[BlendTest]:
+    tests = []
+    for code, _, outcomes in MARKETS:
+        if code not in PRICED_MARKETS:
+            continue
+        rows = sorted((p for p in result.predictions if p.market == code), key=lambda p: p.as_of)
+        prices = load_prices(
+            session,
+            {p.match_id for p in rows},
+            bookmaker=bookmaker,
+            market_code=code,
+            params_key=PRICED_MARKETS[code],
+        )
+        rows = [
+            p
+            for p in rows
+            if _complete(prices.get(p.match_id), outcomes, "opening")
+            and _complete(prices.get(p.match_id), outcomes, "closing")
+        ]
+        model = np.log(np.clip(np.array([p.model for p in rows]), 1e-12, 1.0))
+        opening = np.log(
+            np.array(
+                [
+                    [implied_probabilities(prices[p.match_id].opening)[o] for o in outcomes]
+                    for p in rows
+                ]
+            )
+        )
+        closing = np.array(
+            [[implied_probabilities(prices[p.match_id].closing)[o] for o in outcomes] for p in rows]
+        )
+        happened = np.array([p.outcome for p in rows])
+        as_of = [p.as_of for p in rows]
+        holdout = [i for i, t in enumerate(as_of) if t >= holdout_start]
+
+        blended = []
+        weights = np.array([1.0, 0.0])
+        for n, i in enumerate(holdout):
+            if n % refit_every == 0:
+                history = [j for j, t in enumerate(as_of) if t + timedelta(days=1) <= as_of[i]]
+                if len(history) >= min_history:
+                    weights = _fit_blend(opening[history], model[history], happened[history])
+            logits = weights[0] * opening[i] + weights[1] * model[i]
+            exp = np.exp(logits - logits.max())
+            blended.append(exp / exp.sum())
+        if not holdout:
+            continue
+        tests.append(
+            BlendTest(
+                market=code,
+                matches=len(holdout),
+                model_log_loss=log_loss(np.exp(model[holdout]), happened[holdout]),
+                opening_log_loss=log_loss(np.exp(opening[holdout]), happened[holdout]),
+                blend_log_loss=log_loss(np.array(blended), happened[holdout]),
+                closing_log_loss=log_loss(closing[holdout], happened[holdout]),
+                market_weight=float(weights[0]),
+                model_weight=float(weights[1]),
+            )
+        )
+    return tests
+
+
+def _fit_blend(
+    opening: NDArray[np.float64], model: NDArray[np.float64], happened: NDArray[np.int64]
+) -> NDArray[np.float64]:
+    rows = np.arange(len(happened))
+
+    def objective(w: NDArray[np.float64]) -> float:
+        logits = w[0] * opening + w[1] * model
+        logits = logits - logits.max(axis=1, keepdims=True)
+        log_probs = logits - np.log(np.exp(logits).sum(axis=1, keepdims=True))
+        return float(-log_probs[rows, happened].sum())
+
+    return np.asarray(minimize(objective, [1.0, 0.0], method="L-BFGS-B").x)
