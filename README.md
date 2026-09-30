@@ -31,6 +31,8 @@ file). See `src/edgeforge/core/config.py`.
 ```
 src/edgeforge/      application package (modular monolith)
   core/             configuration, logging, database, time
+  api/              HTTP API for the web app
+web/                Angular web app
 tests/              unit and integration tests
 docs/adr/           architecture decision records
 ```
@@ -39,6 +41,17 @@ docs/adr/           architecture decision records
 
 - [Roadmap: what is built now and what is deferred](docs/ROADMAP.md)
 - [ADR 0001: technology stack](docs/adr/0001-technology-stack.md)
+
+## Web app
+
+```bash
+cd web && npm ci && npm run build && cd ..   # once, and after pulling web changes (Node 24)
+uv run edgeforge serve                       # http://127.0.0.1:8000
+```
+
+Pick a league, then a fixture (or any two teams) to see estimated probabilities, form over
+the last 5, 10 or 20 matches overall or home/away, recent results and head-to-head. For
+frontend work run `npm start` in `web/` (port 4200, proxies `/api` to `edgeforge serve`).
 
 ## Comparing a match
 
