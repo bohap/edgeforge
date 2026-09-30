@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy import select
 
+from edgeforge.backtest.market import compare_with_market
 from edgeforge.backtest.walk_forward import run_backtest
 from edgeforge.catalog.models import Competition
 from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS
@@ -54,6 +55,11 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--to", dest="end", type=_utc_date, required=True)
     backtest.add_argument("--half-life", type=float, default=180.0)
     backtest.add_argument("--xg-weight", type=float, default=0.7)
+    backtest.add_argument(
+        "--market",
+        metavar="BOOKMAKER",
+        help="also score against this bookmaker's prices, e.g. market_average or pinnacle",
+    )
     return parser
 
 
@@ -101,6 +107,22 @@ def run_backtest_command(args: argparse.Namespace) -> int:
             f"{s.market:14} {s.predictions:5} {s.model_log_loss:8.4f} {s.base_log_loss:8.4f} "
             f"{s.model_brier:7.4f} {s.base_brier:7.4f} {s.model_ece:6.3f}"
         )
+    if args.market:
+        with default_session_factory()() as session:
+            comparisons = compare_with_market(session, result, bookmaker=args.market)
+        for c in comparisons:
+            print(
+                f"\n{c.market} vs {c.bookmaker} closing prices ({c.matches} matches): "
+                f"model log loss {c.model_log_loss:.4f}, market {c.market_log_loss:.4f}"
+            )
+            header = ("price", "edge", "bets", "roi", "±se", "odds", "clv")
+            print("  {:8} {:>5} {:>5} {:>7} {:>6} {:>5} {:>7}".format(*header))
+            for sim in c.simulations:
+                clv = "" if sim.closing_line_value is None else f"{sim.closing_line_value:+.3f}"
+                print(
+                    f"  {sim.price_type:8} {sim.min_edge:5.2f} {sim.bets:5} {sim.roi:+7.3f} "
+                    f"{sim.roi_standard_error:6.3f} {sim.average_odds:5.2f} {clv:>7}"
+                )
     return 0
 
 
