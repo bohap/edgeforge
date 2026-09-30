@@ -1,8 +1,8 @@
-"""Command line: ``edgeforge backfill understat --seasons 2021-2026 [--leagues EPL,La_liga]``."""
+"""Command line: ``edgeforge compare``, ``edgeforge backfill``, ``edgeforge backtest``, ``dq``."""
 
 import argparse
 import sys
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 
@@ -11,9 +11,13 @@ from edgeforge.backtest.recalibrate import recalibrate
 from edgeforge.backtest.walk_forward import run_backtest
 from edgeforge.catalog.models import Competition
 from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS
+from edgeforge.compare.report import render
+from edgeforge.compare.service import compare_match, fit_ratings
 from edgeforge.core.config import get_settings
 from edgeforge.core.db import default_session_factory
 from edgeforge.core.logging import configure_logging, get_logger
+from edgeforge.features.gateway import upcoming_fixtures
+from edgeforge.football.teams import TeamLookupError, find_team, team_names
 from edgeforge.ingestion.football_data import enqueue_season
 from edgeforge.ingestion.understat import enqueue_league
 from edgeforge.models.football_goals.model import GoalModelConfig
@@ -70,7 +74,28 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="BOOKMAKER",
         help="also score against this bookmaker's prices, e.g. market_average or pinnacle",
     )
+    compare = commands.add_parser(
+        "compare", help="compare two teams: form, xG, head-to-head and estimated probabilities"
+    )
+    compare.add_argument("--competition", required=True, help="competition code, e.g. EPL")
+    compare.add_argument("--home", help="home team name (with --away); default: all fixtures")
+    compare.add_argument("--away", help="away team name")
+    compare.add_argument(
+        "--days", type=int, default=7, help="without --home/--away: fixtures in the next N days"
+    )
+    compare.add_argument("--last", type=parse_windows, default=[5, 10], help="e.g. 5,10,20")
+    compare.add_argument(
+        "--as-of", type=_utc_date, help="use only data known at this date (default: now)"
+    )
     return parser
+
+
+def parse_windows(value: str) -> list[int]:
+    """``5,10`` → [5, 10]."""
+    windows = [int(part) for part in value.split(",") if part.strip()]
+    if not windows or min(windows) < 1:
+        raise argparse.ArgumentTypeError("--last needs positive integers, e.g. 5,10")
+    return windows
 
 
 def _utc_date(value: str) -> datetime:
@@ -84,6 +109,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_dq()
     if args.command == "backtest":
         return run_backtest_command(args)
+    if args.command == "compare":
+        return run_compare(args)
     queued = skipped = 0
     with default_session_factory().begin() as session:
         for league in args.leagues:
@@ -146,6 +173,49 @@ def run_backtest_command(args: argparse.Namespace) -> int:
                 f"closing {b.closing_log_loss:.4f}  weights market={b.market_weight:.2f} "
                 f"model={b.model_weight:.2f}"
             )
+    return 0
+
+
+def run_compare(args: argparse.Namespace) -> int:
+    if (args.home is None) != (args.away is None):
+        print("give both --home and --away, or neither", file=sys.stderr)
+        return 2
+    as_of = args.as_of or datetime.now(UTC)
+    with default_session_factory()() as session:
+        competition = session.scalars(
+            select(Competition.id).where(Competition.code == args.competition)
+        ).one_or_none()
+        if competition is None:
+            print(f"unknown competition {args.competition!r}", file=sys.stderr)
+            return 2
+        if args.home is not None:
+            try:
+                pairs = [(find_team(session, args.home), find_team(session, args.away))]
+            except TeamLookupError as exc:
+                print(exc, file=sys.stderr)
+                return 2
+            kickoffs: list[datetime | None] = [None]
+        else:
+            fixtures = upcoming_fixtures(
+                session, as_of, as_of + timedelta(days=args.days), competition_id=competition
+            )
+            if not fixtures:
+                print(f"no {args.competition} fixtures in the next {args.days} days")
+                return 0
+            pairs = [(f.home_team_id, f.away_team_id) for f in fixtures]
+            kickoffs = [f.kickoff_at for f in fixtures]
+        ratings = fit_ratings(session, competition, as_of)
+        names = team_names(session, {team for pair in pairs for team in pair})
+        reports = []
+        for (home, away), kickoff in zip(pairs, kickoffs, strict=True):
+            comparison = compare_match(
+                session, home, away, as_of, windows=args.last, ratings=ratings
+            )
+            report = render(comparison, names)
+            if kickoff is not None:
+                report = f"{kickoff:%a %Y-%m-%d %H:%M} UTC  {report}"
+            reports.append(report)
+    print(f"\n\n{'=' * 70}\n\n".join(reports))
     return 0
 
 

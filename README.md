@@ -40,6 +40,22 @@ docs/adr/           architecture decision records
 - [Roadmap: what is built now and what is deferred](docs/ROADMAP.md)
 - [ADR 0001: technology stack](docs/adr/0001-technology-stack.md)
 
+## Comparing a match
+
+```bash
+uv run edgeforge compare --competition EPL                          # fixtures in the next 7 days
+uv run edgeforge compare --competition EPL --home "man city" --away arsenal --last 5,10,20
+```
+
+For each match: both teams' results, points per game, goals and xG for and against, and how
+often both teams scored or the match went over 2.5 goals, over the last N matches overall
+and at the venue they play at (all competitions in the data); every earlier meeting; and
+estimated probabilities (1X2, both teams to score, over 2.5, most likely score) from the goal
+model fitted on the competition. `--as-of 2026-03-01` shows what was known on that date.
+Team names match ignoring case and by word prefix ("man city", "forest").
+
+Keep the data fresh first (`edgeforge-worker ingest-understat` with the schedule below).
+
 ## Database
 
 Migrations live in `migrations/` (Alembic). Autogenerate output is only a draft: review
