@@ -73,7 +73,8 @@ def clear_committed_data(engine: Engine) -> None:
         conn.execute(text("DELETE FROM procrastinate_jobs"))
         conn.execute(
             text(
-                "TRUNCATE ops.job_run, core.shot, core.player_match_stats, core.player, "
+                "TRUNCATE mkt.historical_odds, ops.job_run, ops.dq_issue, core.shot, "
+                "core.player_match_stats, core.player, "
                 "core.match_team_stats, core.match_result, core.match, core.team_season, "
                 "core.team, raw.raw_payload, raw.raw_blob, ref.provider_entity_map, ref.season, "
                 "ref.competition, ref.data_provider, ref.sport CASCADE"

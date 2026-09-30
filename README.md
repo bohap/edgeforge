@@ -115,3 +115,16 @@ Walk-forward: each match is predicted as of 60 minutes before kickoff with a mod
 weekly from `features.played_matches`, so only information public at that moment is used.
 The report compares log loss, Brier score and calibration error (ECE) with a base-rate model
 for 1X2, BTTS and over/under 2.5.
+
+## Historical odds
+
+```bash
+uv run edgeforge backfill football-data --seasons 2021-2025 --leagues EPL,La_liga
+uv run edgeforge-worker ingest-football-data
+```
+
+Season CSVs from football-data.co.uk (opening and closing 1X2 and over/under 2.5 prices for
+bet365, Pinnacle, market average, market maximum and Betfair exchange) are stored in
+`mkt.historical_odds` against our matches. Load the Understat league-season first. Team
+names are resolved by fixture voting and stored in `ref.provider_entity_map`; rows that
+cannot be placed are reported, never guessed.

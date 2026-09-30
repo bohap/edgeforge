@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 
 from edgeforge.core.config import get_settings
 from edgeforge.core.db import default_session_factory
-from edgeforge.ingestion import understat
+from edgeforge.ingestion import football_data, understat
 from edgeforge.ops.job_runs import run_tracked
-from edgeforge.providers.http import HttpFetcher
+from edgeforge.providers.http import FetchPolicy, HttpFetcher
 from edgeforge.providers.ratelimit import RateLimiter
 from edgeforge.providers.understat.client import League
 
@@ -24,6 +24,24 @@ def understat_fetcher() -> HttpFetcher:
     settings = get_settings()
     return HttpFetcher(
         httpx.Client(timeout=30), RateLimiter(settings.understat_requests_per_second)
+    )
+
+
+@lru_cache(maxsize=1)
+def football_data_fetcher() -> HttpFetcher:
+    return HttpFetcher(httpx.Client(timeout=60), RateLimiter(1.0), FetchPolicy(expect_json=False))
+
+
+@blueprint.task(name="football_data_season", queue=football_data.QUEUE)
+def football_data_season(competition: str, season: int) -> dict[str, Any]:
+    def work(session: Session) -> dict[str, Any]:
+        return football_data.ingest_season(session, football_data_fetcher(), competition, season)
+
+    return run_tracked(
+        default_session_factory(),
+        football_data.SEASON_TASK,
+        {"competition": competition, "season": season},
+        work,
     )
 
 
