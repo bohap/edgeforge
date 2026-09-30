@@ -2,11 +2,12 @@
 
 import uuid
 from collections.abc import Iterable
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from edgeforge.football.models import Team
+from edgeforge.football.models import Match, Team
 
 # Common short names that are not word prefixes of the full name.
 ALIASES = {
@@ -50,6 +51,26 @@ def find_team(session: Session, query: str) -> uuid.UUID:
 def _matches_words(name: str, words: list[str]) -> bool:
     name_words = name.lower().split()
     return all(any(w.startswith(q) for w in name_words) for q in words)
+
+
+def competition_teams(
+    session: Session, competition_id: uuid.UUID, since: datetime
+) -> dict[uuid.UUID, str]:
+    """Teams with a match in the competition kicking off at or after ``since``, by name."""
+    played = (
+        select(Match.home_team_id.label("team_id"))
+        .where(Match.competition_id == competition_id, Match.kickoff_at >= since)
+        .union(
+            select(Match.away_team_id).where(
+                Match.competition_id == competition_id, Match.kickoff_at >= since
+            )
+        )
+        .subquery()
+    )
+    rows = session.execute(
+        select(Team.id, Team.name).join(played, played.c.team_id == Team.id).order_by(Team.name)
+    )
+    return {row.id: row.name for row in rows}
 
 
 def team_names(session: Session, team_ids: Iterable[uuid.UUID]) -> dict[uuid.UUID, str]:

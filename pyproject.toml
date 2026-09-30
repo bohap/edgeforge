@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.16",
+    "fastapi>=0.142",
     "httpx>=0.28",
     "numpy>=2.3",
     "procrastinate==3.10.0",
@@ -15,6 +16,7 @@ dependencies = [
     "scipy>=1.16",
     "sqlalchemy>=2.0.43",
     "structlog>=25.4",
+    "uvicorn[standard]>=0.54",
 ]
 
 [project.scripts]
@@ -23,6 +25,7 @@ edgeforge-worker = "edgeforge.jobs.worker:main"
 
 [dependency-groups]
 dev = [
+    "httpx2>=2.13.1",
     "mypy>=1.18",
     "pre-commit>=4.3",
     "pytest>=8.4",

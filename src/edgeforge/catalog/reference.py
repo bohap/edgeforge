@@ -91,3 +91,16 @@ def ensure_season(
         season.end_date = max(season.end_date, last)
     session.flush()
     return season
+
+
+def enabled_competitions(session: Session) -> list[Competition]:
+    """Competitions switched on for ingestion, by name."""
+    return list(
+        session.scalars(
+            select(Competition).where(Competition.enabled.is_(True)).order_by(Competition.name)
+        )
+    )
+
+
+def competition_by_code(session: Session, code: str) -> Competition | None:
+    return session.scalars(select(Competition).where(Competition.code == code)).one_or_none()
