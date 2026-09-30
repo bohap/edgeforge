@@ -1,0 +1,71 @@
+<section class="card">
+  <div class="section-head">
+    <h1>Upcoming fixtures</h1>
+    <div class="segmented" role="group" aria-label="Days ahead">
+      @for (option of dayOptions; track option) {
+        <button
+          type="button"
+          [class.active]="days() === option"
+          [attr.aria-pressed]="days() === option"
+          (click)="days.set(option)"
+        >
+          {{ option }} days
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (fixtures.isLoading()) {
+    <p class="muted">Loading fixtures…</p>
+  } @else if (fixtures.error()) {
+    <p class="error">Could not load fixtures. Is <code>edgeforge serve</code> running?</p>
+  } @else if (fixtureDays().length === 0) {
+    <p class="muted">No fixtures in the next {{ days() }} days.</p>
+  } @else {
+    @for (day of fixtureDays(); track day.date) {
+      <h2 class="day">{{ day.fixtures[0].kickoff_at | date: 'EEEE d MMMM' }}</h2>
+      <ul class="fixtures">
+        @for (f of day.fixtures; track f.match_id) {
+          <li>
+            <a
+              class="fixture"
+              [routerLink]="['/', competition(), 'compare']"
+              [queryParams]="{ home: f.home.id, away: f.away.id, kickoff: f.kickoff_at }"
+            >
+              <span class="time">{{ f.kickoff_at | date: 'HH:mm' }}</span>
+              <span class="team home">{{ f.home.name }}</span>
+              <span class="vs">vs</span>
+              <span class="team away">{{ f.away.name }}</span>
+              <span class="go" aria-hidden="true">›</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
+
+<section class="card">
+  <h2>Compare any two teams</h2>
+  <form class="picker" (submit)="$event.preventDefault(); compare()">
+    <label>
+      Home
+      <select [value]="home()" (change)="home.set($any($event.target).value)">
+        <option value="">Choose a team</option>
+        @for (t of teams.value() ?? []; track t.id) {
+          <option [value]="t.id">{{ t.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Away
+      <select [value]="away()" (change)="away.set($any($event.target).value)">
+        <option value="">Choose a team</option>
+        @for (t of teams.value() ?? []; track t.id) {
+          <option [value]="t.id">{{ t.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="submit" class="primary" [disabled]="!canCompare()">Compare</button>
+  </form>
+</section>

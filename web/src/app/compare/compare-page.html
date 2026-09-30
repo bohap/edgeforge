@@ -1,0 +1,217 @@
+<a class="back" [routerLink]="['/', competition()]">‹ Fixtures</a>
+
+@if (comparison.isLoading()) {
+  <p class="muted">Loading comparison…</p>
+} @else if (comparison.error()) {
+  <p class="error">Could not load this comparison.</p>
+} @else if (comparison.value(); as c) {
+  <section class="card match-head">
+    <div class="teams">
+      <span class="team-name">{{ c.home.team.name }}</span>
+      <span class="vs">vs</span>
+      <span class="team-name">{{ c.away.team.name }}</span>
+    </div>
+    <p class="muted">
+      {{ c.competition.name }}
+      @if (kickoff()) {
+        · {{ kickoff() | date: 'EEE d MMM, HH:mm' }}
+      }
+      · data up to
+      {{ c.home.last_played ? (c.home.last_played | date: 'd MMM') : '–' }} /
+      {{ c.away.last_played ? (c.away.last_played | date: 'd MMM') : '–' }}
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Estimated probabilities</h2>
+    @if (c.estimate; as e) {
+      <div
+        class="outcome-bar"
+        role="img"
+        [attr.aria-label]="
+          c.home.team.name +
+          ' win ' +
+          percent(e.home_win) +
+          ', draw ' +
+          percent(e.draw) +
+          ', ' +
+          c.away.team.name +
+          ' win ' +
+          percent(e.away_win)
+        "
+      >
+        <span class="seg home" [style.flex-grow]="e.home_win">{{ percent(e.home_win) }}</span>
+        <span class="seg draw" [style.flex-grow]="e.draw">{{ percent(e.draw) }}</span>
+        <span class="seg away" [style.flex-grow]="e.away_win">{{ percent(e.away_win) }}</span>
+      </div>
+      <div class="outcome-labels">
+        <span>{{ c.home.team.name }}</span
+        ><span>Draw</span><span>{{ c.away.team.name }}</span>
+      </div>
+      <dl class="stats">
+        <div>
+          <dt>Expected goals</dt>
+          <dd>{{ decimal(e.expected_home_goals) }} – {{ decimal(e.expected_away_goals) }}</dd>
+        </div>
+        <div>
+          <dt>Both teams score</dt>
+          <dd>{{ percent(e.both_score) }}</dd>
+        </div>
+        <div>
+          <dt>Over 2.5 goals</dt>
+          <dd>{{ percent(e.over_2_5) }}</dd>
+        </div>
+        <div>
+          <dt>Most likely score</dt>
+          <dd>
+            {{ e.likely_score[0] }}–{{ e.likely_score[1] }}
+            <small>({{ percent(e.likely_score_probability) }})</small>
+          </dd>
+        </div>
+      </dl>
+      <p class="note">
+        Model estimate from team ratings built on xG and goals, recent matches weighted more. It
+        knows nothing about injuries or lineups, so treat it as one opinion, not a certainty.
+      </p>
+    } @else {
+      <p class="muted">Not available: too little data for one of the teams in this competition.</p>
+    }
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Form</h2>
+      <div class="controls">
+        <div class="segmented" role="group" aria-label="Matches">
+          @for (w of windows; track w) {
+            <button
+              type="button"
+              [class.active]="window() === w"
+              [attr.aria-pressed]="window() === w"
+              (click)="window.set(w)"
+            >
+              Last {{ w }}
+            </button>
+          }
+        </div>
+        <div class="segmented" role="group" aria-label="Venue">
+          <button
+            type="button"
+            [class.active]="!venueOnly()"
+            [attr.aria-pressed]="!venueOnly()"
+            (click)="venueOnly.set(false)"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            [class.active]="venueOnly()"
+            [attr.aria-pressed]="venueOnly()"
+            (click)="venueOnly.set(true)"
+          >
+            Home / away
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (forms(); as f) {
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">
+              {{ c.home.team.name }}
+              @if (venueOnly()) {
+                <small>at home</small>
+              }
+            </th>
+            <th scope="col">
+              {{ c.away.team.name }}
+              @if (venueOnly()) {
+                <small>away</small>
+              }
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Results <small>newest first</small></th>
+            <td>
+              @if (f.home) {
+                <span class="chips">
+                  @for (r of f.home.results.split(''); track $index) {
+                    <span class="chip" [class]="'r-' + r">{{ r }}</span>
+                  }
+                </span>
+              } @else {
+                –
+              }
+            </td>
+            <td>
+              @if (f.away) {
+                <span class="chips">
+                  @for (r of f.away.results.split(''); track $index) {
+                    <span class="chip" [class]="'r-' + r">{{ r }}</span>
+                  }
+                </span>
+              } @else {
+                –
+              }
+            </td>
+          </tr>
+          @for (m of metrics; track m.label) {
+            <tr>
+              <th scope="row">{{ m.label }}</th>
+              <td [class.better]="better(m, 'home')">{{ f.home ? m.format(f.home) : '–' }}</td>
+              <td [class.better]="better(m, 'away')">{{ f.away ? m.format(f.away) : '–' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+
+  <div class="two-col">
+    @for (side of [c.home, c.away]; track side.team.id) {
+      <section class="card">
+        <h2>{{ side.team.name }}: recent matches</h2>
+        @if (side.recent.length === 0) {
+          <p class="muted">No matches in the data.</p>
+        } @else {
+          <ul class="results">
+            @for (m of side.recent.slice(0, recentShown); track m.kickoff_at) {
+              <li>
+                <span class="chip" [class]="'r-' + m.result">{{ m.result }}</span>
+                <span class="date">{{ m.kickoff_at | date: 'd MMM yy' }}</span>
+                <span class="opp">
+                  {{ m.venue === 'home' ? 'vs' : '@' }} {{ m.opponent.name }}
+                </span>
+                <span class="score">{{ m.goals_for }}–{{ m.goals_against }}</span>
+                <span class="xg">xG {{ decimal(m.xg_for, 1) }}–{{ decimal(m.xg_against, 1) }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </div>
+
+  <section class="card">
+    <h2>Head to head</h2>
+    @if (c.head_to_head.length === 0) {
+      <p class="muted">No earlier meetings in the data.</p>
+    } @else {
+      <ul class="results">
+        @for (m of c.head_to_head; track m.kickoff_at) {
+          <li>
+            <span class="date">{{ m.kickoff_at | date: 'd MMM yy' }}</span>
+            <span class="opp">{{ m.home.name }} – {{ m.away.name }}</span>
+            <span class="score">{{ m.home_goals }}–{{ m.away_goals }}</span>
+            <span class="xg">xG {{ decimal(m.home_xg, 1) }}–{{ decimal(m.away_xg, 1) }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+}
