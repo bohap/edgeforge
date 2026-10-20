@@ -14,8 +14,9 @@ from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS
 from edgeforge.compare.report import render
 from edgeforge.compare.service import compare_match, fit_ratings
 from edgeforge.core.config import get_settings
-from edgeforge.core.db import default_session_factory
+from edgeforge.core.db import create_db_engine, default_session_factory
 from edgeforge.core.logging import configure_logging, get_logger
+from edgeforge.core.schema_check import schema_state
 from edgeforge.features.gateway import upcoming_fixtures
 from edgeforge.football.teams import TeamLookupError, find_team, team_names
 from edgeforge.ingestion.football_data import enqueue_season
@@ -90,6 +91,12 @@ def build_parser() -> argparse.ArgumentParser:
     serve = commands.add_parser("serve", help="run the web app and its API")
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument(
+        "--no-worker",
+        dest="worker",
+        action="store_false",
+        help="do not run the job worker in this process (run edgeforge-worker instead)",
+    )
     return parser
 
 
@@ -229,7 +236,19 @@ def run_serve(args: argparse.Namespace) -> int:
 
     from edgeforge.api.app import create_app
 
-    uvicorn.run(create_app(), host=args.host, port=args.port, log_config=None)
+    engine = create_db_engine(get_settings())
+    try:
+        state = schema_state(engine)
+    finally:
+        engine.dispose()
+    if not state.up_to_date:
+        print(
+            f"The database is at migration {state.current or 'none'}, the code needs "
+            f"{state.head}. Run: uv run alembic upgrade head",
+            file=sys.stderr,
+        )
+        return 1
+    uvicorn.run(create_app(run_worker=args.worker), host=args.host, port=args.port, log_config=None)
     return 0
 
 

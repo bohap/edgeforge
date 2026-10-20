@@ -104,3 +104,33 @@ export function percent(value: number): string {
 export function decimal(value: number | null | undefined, digits = 2): string {
   return value === null || value === undefined ? '–' : value.toFixed(digits);
 }
+
+export interface LeagueSync {
+  league: string;
+  code: string;
+  name: string;
+  has_data: boolean;
+  latest_result_at: string | null;
+  last_checked_at: string | null;
+  last_check_failed: boolean;
+  queued: boolean;
+}
+
+export interface SyncStatus {
+  current_season: number;
+  first_season: number;
+  workers_online: number;
+  queue: { todo: number; doing: number; failed: number };
+  match_details_queued: number;
+  leagues: LeagueSync[];
+}
+
+export interface Queued {
+  queued: number;
+}
+
+export const syncApi = {
+  status: () => '/api/sync',
+  refresh: () => '/api/sync/refresh',
+  history: () => '/api/sync/history',
+};

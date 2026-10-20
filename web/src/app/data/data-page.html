@@ -1,0 +1,119 @@
+@if (current(); as s) {
+  <section class="card">
+    <div class="section-head">
+      <h1>Data</h1>
+      <button type="button" class="primary" [disabled]="busy()" (click)="refresh()">
+        Refresh all leagues
+      </button>
+    </div>
+
+    <p class="status-line">
+      @if (s.workers_online > 0) {
+        <span class="dot ok" aria-hidden="true"></span> Worker running
+      } @else {
+        <span class="dot off" aria-hidden="true"></span>
+        No worker running: jobs wait until <code>edgeforge serve</code> (which runs one) or
+        <code>edgeforge-worker</code> is started.
+      }
+      @if (working()) {
+        · {{ s.queue.todo + s.queue.doing }} jobs to go
+        @if (s.match_details_queued > 0) {
+          ({{ s.match_details_queued }} player and shot details)
+        }
+      } @else {
+        · all jobs done
+      }
+      @if (s.queue.failed > 0) {
+        · <span class="error">{{ s.queue.failed }} failed</span>
+      }
+    </p>
+    @if (message()) {
+      <p class="muted" role="status">{{ message() }}</p>
+    }
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">League</th>
+          <th scope="col">Latest result</th>
+          <th scope="col">Last checked</th>
+          <th scope="col"><span class="visually-hidden">Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of s.leagues; track l.league) {
+          <tr>
+            <th scope="row">{{ l.name }}</th>
+            <td>{{ l.latest_result_at ? (l.latest_result_at | date: 'EEE d MMM') : 'no data' }}</td>
+            <td>
+              @if (l.last_check_failed) {
+                <span class="error">failed</span>
+              }
+              {{ l.last_checked_at ? (l.last_checked_at | date: 'd MMM, HH:mm') : 'never' }}
+            </td>
+            <td class="action">
+              @if (l.queued) {
+                <span class="muted">queued…</span>
+              } @else {
+                <button
+                  type="button"
+                  class="link"
+                  [disabled]="busy()"
+                  (click)="refresh([l.league])"
+                >
+                  Refresh
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="note">
+      Refresh fetches the current season ({{ seasonLabel(s.current_season) }}): new results, xG and
+      fixtures, in under a minute. A running server also refreshes every 6 hours by itself. Player
+      and shot details follow in the background; the comparison does not need them.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Load past seasons</h2>
+    <p class="muted">
+      Form and head-to-head look back over earlier seasons, and the model uses the last three.
+      League data takes a few seconds per season; the player details queued after it take hours for
+      many seasons, but nothing waits for them.
+    </p>
+    <form class="history" (submit)="$event.preventDefault(); loadHistory()">
+      <label>
+        From season
+        <select (change)="fromSeason.set(+$any($event.target).value)">
+          @for (season of seasons(); track season) {
+            <option [value]="season" [selected]="season === chosenFromSeason()">
+              {{ seasonLabel(season) }}
+            </option>
+          }
+        </select>
+      </label>
+      <fieldset>
+        <legend>Leagues</legend>
+        @for (l of s.leagues; track l.league) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="chosenLeagues().has(l.league)"
+              (change)="toggleLeague(l.league, $any($event.target).checked)"
+            />
+            {{ l.name }}
+          </label>
+        }
+      </fieldset>
+      <button type="submit" class="primary" [disabled]="busy() || chosenLeagues().size === 0">
+        Load {{ seasonLabel(chosenFromSeason()) }} to now
+      </button>
+    </form>
+  </section>
+} @else if (status.error()) {
+  <p class="error">Could not load the data status. Is <code>edgeforge serve</code> running?</p>
+} @else {
+  <p class="muted">Loading…</p>
+}

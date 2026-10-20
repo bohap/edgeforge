@@ -113,7 +113,7 @@ export class ComparePage {
   );
 
   protected readonly forms = computed(() => {
-    const c = this.comparison.value();
+    const c = this.comparison.hasValue() ? this.comparison.value() : undefined;
     if (!c) {
       return null;
     }

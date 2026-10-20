@@ -77,4 +77,29 @@ describe('FixturesPage', () => {
 
     expect(page.nativeElement.textContent).toContain('No fixtures in the next 14 days');
   });
+
+  it('points to the Data page when the league has no data yet', async () => {
+    TestBed.configureTestingModule({
+      imports: [FixturesPage],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    const page = TestBed.createComponent(FixturesPage);
+    page.componentRef.setInput('competition', 'SERIE_A');
+    page.detectChanges();
+
+    const http = TestBed.inject(HttpTestingController);
+    const missing = { status: 404, statusText: 'Not Found' };
+    http
+      .expectOne((r) => r.url === '/api/competitions/SERIE_A/fixtures')
+      .flush({ detail: 'unknown competition' }, missing);
+    http
+      .expectOne('/api/competitions/SERIE_A/teams')
+      .flush({ detail: 'unknown competition' }, missing);
+    await page.whenStable();
+
+    const text: string = page.nativeElement.textContent;
+    expect(text).toContain('No data for this league yet');
+    expect(page.nativeElement.querySelector('a[href="/data"]')).toBeTruthy();
+    expect(text).not.toContain('Compare any two teams');
+  });
 });
