@@ -42,16 +42,36 @@ docs/adr/           architecture decision records
 - [Roadmap: what is built now and what is deferred](docs/ROADMAP.md)
 - [ADR 0001: technology stack](docs/adr/0001-technology-stack.md)
 
-## Web app
+## Run locally
+
+Needs Docker, [uv](https://docs.astral.sh/uv/) and Node 24.
 
 ```bash
-cd web && npm ci && npm run build && cd ..   # once, and after pulling web changes (Node 24)
-uv run edgeforge serve                       # http://127.0.0.1:8000
+docker compose up -d                          # PostgreSQL 18 on localhost:5432
+uv sync
+uv run alembic upgrade head                   # create the schema (again after pulling migrations)
+cd web && npm ci && npm run build && cd ..    # build the web app (again after pulling web changes)
+uv run edgeforge serve                        # http://127.0.0.1:8000
 ```
 
+Open the **Data** page and press **Refresh all leagues** to fetch the current season (under
+a minute), then **Load past seasons** for form and head-to-head history. `edgeforge serve`
+runs a job worker in the same process, so there is nothing else to start: it fetches what you
+queue, and refreshes the current season every 6 hours while it runs. Press Refresh on the
+Data page for new results now. Player and shot details follow in the background; the
+comparison does not need them.
+
 Pick a league, then a fixture (or any two teams) to see estimated probabilities, form over
-the last 5, 10 or 20 matches overall or home/away, recent results and head-to-head. For
-frontend work run `npm start` in `web/` (port 4200, proxies `/api` to `edgeforge serve`).
+the last 5, 10 or 20 matches overall or home/away, recent results and head-to-head.
+
+- Port 5432 already taken (a local PostgreSQL)? Start with `EDGEFORGE_DB_PORT=5433 docker
+  compose up -d` and set `EDGEFORGE_DATABASE_URL=postgresql+psycopg://edgeforge:edgeforge@localhost:5433/edgeforge`
+  in `.env`.
+- `edgeforge serve` refuses to start until the schema is migrated, and says which command
+  to run.
+- `edgeforge serve --no-worker` serves only the app, for when `edgeforge-worker` runs
+  separately.
+- For frontend work run `npm start` in `web/` (port 4200, proxies `/api` to `edgeforge serve`).
 
 ## Comparing a match
 
@@ -79,6 +99,9 @@ uv run edgeforge serve          # http://127.0.0.1:8000/api/docs
 | `GET /api/competitions/{code}/fixtures?days=7` | upcoming fixtures |
 | `GET /api/competitions/{code}/teams` | teams with a match in the last 400 days |
 | `GET /api/competitions/{code}/compare?home=ID&away=ID&last=5&last=10` | the comparison |
+| `GET /api/sync` | worker, queue and per-league data status |
+| `POST /api/sync/refresh` `{"leagues": [...]}` | queue the current season (all leagues by default) |
+| `POST /api/sync/history` `{"from_season": 2021, "leagues": [...]}` | queue past seasons |
 
 `as_of` works on fixtures and compare as on the command line. Model fits are cached per
 competition and hour.
@@ -148,7 +171,8 @@ tick once, even with several workers):
 | `ingest:understat_refresh_current_season` | `17 */6 * * *` | queues league jobs for the current season; they queue match jobs for newly finished matches |
 | `ops:dq_checks` | `41 * * * *` | runs the data-quality checks |
 
-For production, run `edgeforge-worker ops ingest-understat` (or one worker per queue).
+`edgeforge serve` runs such a worker on all queues. Without it, run
+`edgeforge-worker ops ingest-understat` (or one worker per queue).
 
 ## Backtesting
 

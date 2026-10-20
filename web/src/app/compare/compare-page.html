@@ -4,7 +4,8 @@
   <p class="muted">Loading comparison…</p>
 } @else if (comparison.error()) {
   <p class="error">Could not load this comparison.</p>
-} @else if (comparison.value(); as c) {
+} @else if (comparison.hasValue()) {
+  @let c = comparison.value();
   <section class="card match-head">
     <div class="teams">
       <span class="team-name">{{ c.home.team.name }}</span>

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
+import { HttpErrorResponse, httpResource } from '@angular/common/http';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
@@ -50,7 +50,15 @@ export class FixturesPage {
   }));
   protected readonly teams = httpResource<Team[]>(() => api.teams(this.competition()));
 
-  protected readonly fixtureDays = computed(() => groupByDay(this.fixtures.value() ?? []));
+  /** 404: the league has never been loaded. */
+  protected readonly notLoaded = computed(() => {
+    const error = this.fixtures.error();
+    return error instanceof HttpErrorResponse && error.status === 404;
+  });
+
+  protected readonly fixtureDays = computed(() =>
+    groupByDay(this.fixtures.hasValue() ? this.fixtures.value() : []),
+  );
 
   protected readonly home = signal('');
   protected readonly away = signal('');

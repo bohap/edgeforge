@@ -1,8 +1,10 @@
 """Job-run ledger: every tracked job leaves a row in ``ops.job_run`` with its outcome."""
 
 from collections.abc import Callable
+from datetime import datetime
 from typing import Any
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from edgeforge.core.logging import get_logger
@@ -50,3 +52,22 @@ def run_tracked[T: dict[str, Any]](
         done.stats = stats
     log.info("job_succeeded", job_name=job_name, job_run_id=str(run_id), **stats)
     return stats
+
+
+def last_finished(
+    session: Session, job_name: str, params: dict[str, Any]
+) -> tuple[datetime, JobStatus] | None:
+    """When the latest finished run of ``job_name`` with exactly these params ended, and how."""
+    row = session.execute(
+        select(JobRun.finished_at, JobRun.status)
+        .where(
+            JobRun.job_name == job_name,
+            JobRun.params == params,
+            JobRun.finished_at.is_not(None),
+        )
+        .order_by(JobRun.finished_at.desc())
+        .limit(1)
+    ).first()
+    if row is None or row.finished_at is None:
+        return None
+    return row.finished_at, row.status

@@ -1,0 +1,21 @@
+# Local database for development: `docker compose up -d`.
+# The credentials match the default EDGEFORGE_DATABASE_URL, so no .env is needed.
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: edgeforge
+      POSTGRES_PASSWORD: edgeforge
+      POSTGRES_DB: edgeforge
+    ports:
+      - "127.0.0.1:${EDGEFORGE_DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "edgeforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

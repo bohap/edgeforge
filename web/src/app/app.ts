@@ -5,6 +5,7 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, map } from 'rxjs';
 
 import { api, Competition } from './api';
+import { DataVersion } from './data-version';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { api, Competition } from './api';
     <header class="topbar">
       <a class="brand" routerLink="/">EdgeForge</a>
       <nav class="leagues" aria-label="Competitions">
-        @for (c of competitions.value() ?? []; track c.code) {
+        @for (c of competitions.hasValue() ? competitions.value() : []; track c.code) {
           <a
             [routerLink]="['/', c.code]"
             [class.active]="c.code === currentCompetition()"
@@ -22,6 +23,13 @@ import { api, Competition } from './api';
           >
         }
       </nav>
+      <a
+        class="data-link"
+        routerLink="/data"
+        [class.active]="currentCompetition() === 'data'"
+        [attr.aria-current]="currentCompetition() === 'data' ? 'page' : null"
+        >Data</a
+      >
     </header>
     <main>
       <router-outlet />
@@ -34,7 +42,12 @@ import { api, Competition } from './api';
 export class App {
   private readonly router = inject(Router);
 
-  protected readonly competitions = httpResource<Competition[]>(() => api.competitions());
+  private readonly dataVersion = inject(DataVersion);
+
+  protected readonly competitions = httpResource<Competition[]>(() => {
+    this.dataVersion.value();
+    return api.competitions();
+  });
 
   private readonly url = toSignal(
     this.router.events.pipe(
