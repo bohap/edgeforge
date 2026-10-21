@@ -44,15 +44,17 @@ docs/adr/           architecture decision records
 
 ## Run locally
 
-Needs Docker, [uv](https://docs.astral.sh/uv/) and Node 24.
+Needs [uv](https://docs.astral.sh/uv/), Node 24 and either Docker or a PostgreSQL of your own.
 
 ```bash
-docker compose up -d                          # PostgreSQL 18 on localhost:5432
-uv sync
-uv run alembic upgrade head                   # create the schema (again after pulling migrations)
-cd web && npm ci && npm run build && cd ..    # build the web app (again after pulling web changes)
-uv run edgeforge serve                        # http://127.0.0.1:8000
+./start.sh                  # http://127.0.0.1:8000
+./start.sh --port 9000      # extra arguments go to `edgeforge serve`
 ```
+
+`start.sh` runs every step, and is quick when nothing changed, so use it after every pull:
+`uv sync`, starts PostgreSQL with `docker compose` if the configured database is not
+reachable, `alembic upgrade head`, `npm ci` (only when `web/package-lock.json` changed),
+`npm run build`, then `edgeforge serve`.
 
 Open the **Data** page and press **Refresh all leagues** to fetch the current season (under
 a minute), then **Load past seasons** for form and head-to-head history. `edgeforge serve`
