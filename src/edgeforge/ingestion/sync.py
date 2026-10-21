@@ -1,6 +1,7 @@
 """On-demand Understat syncing for the web app: status per league, refresh, history load.
 
 Everything here only queues jobs; a worker (``edgeforge serve`` runs one) does the fetching.
+A refresh also queues the league's Polymarket prices.
 League jobs have a higher priority than match-detail jobs, so a refresh runs next even while
 a long history load is in progress.
 """
@@ -13,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from edgeforge.catalog.reference import UNDERSTAT_COMPETITIONS, competition_by_code
 from edgeforge.football.status import latest_results
+from edgeforge.ingestion import polymarket
 from edgeforge.ingestion.understat import (
     LEAGUE_TASK,
     QUEUE,
@@ -43,6 +45,7 @@ class LeagueSync:
     last_checked_at: datetime | None
     last_check_failed: bool
     queued: bool
+    odds_checked_at: datetime | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,11 +61,13 @@ def sync_status(session: Session, now: datetime) -> SyncStatus:
     season = current_season(now)
     latest = latest_results(session)
     pending = pending_queueing_locks(session, "understat:")
+    pending_odds = pending_queueing_locks(session, "polymarket:")
     leagues = []
     for league in League:
         spec = UNDERSTAT_COMPETITIONS[league.value]
         competition = competition_by_code(session, spec.code)
         checked = last_finished(session, LEAGUE_TASK, {"league": league.value, "season": season})
+        odds = last_finished(session, polymarket.LEAGUE_TASK, {"competition": spec.code})
         leagues.append(
             LeagueSync(
                 league=league,
@@ -72,24 +77,30 @@ def sync_status(session: Session, now: datetime) -> SyncStatus:
                 latest_result_at=latest.get(competition.id) if competition else None,
                 last_checked_at=checked[0] if checked else None,
                 last_check_failed=checked is not None and checked[1] is JobStatus.FAILED,
-                queued=any(
-                    lock.startswith(f"understat:league:{league.value}/") for lock in pending
-                ),
+                queued=any(lock.startswith(f"understat:league:{league.value}/") for lock in pending)
+                or f"polymarket:league:{spec.code}" in pending_odds,
+                odds_checked_at=odds[0] if odds else None,
             )
         )
     return SyncStatus(
         current_season=season,
         workers_online=workers_online(session),
-        queue=queue_summary(session, QUEUE),
+        queue=queue_summary(session, QUEUE, polymarket.QUEUE),
         match_details_queued=sum(lock.startswith("understat:match:") for lock in pending),
         leagues=leagues,
     )
 
 
 def refresh(session: Session, now: datetime, leagues: Sequence[League]) -> int:
-    """Queue the current season of each league. Returns how many jobs were queued."""
+    """Queue the current season of each league, and its Polymarket prices. Returns how many
+    jobs were queued."""
     season = current_season(now)
-    return sum(enqueue_league(session, league, season) is not None for league in leagues)
+    queued = 0
+    for league in leagues:
+        queued += enqueue_league(session, league, season) is not None
+        code = UNDERSTAT_COMPETITIONS[league.value].code
+        queued += polymarket.enqueue_league(session, code) is not None
+    return queued
 
 
 def load_history(

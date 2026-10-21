@@ -66,6 +66,7 @@ def test_status_of_an_empty_database(db_session: Session) -> None:
     assert [s.league for s in status.leagues] == list(League)
     assert not any(s.has_data or s.queued for s in status.leagues)
     assert all(s.latest_result_at is None and s.last_checked_at is None for s in status.leagues)
+    assert all(s.odds_checked_at is None for s in status.leagues)
     assert (status.queue.todo, status.queue.doing, status.queue.failed) == (0, 0, 0)
     assert status.match_details_queued == 0
 
@@ -89,12 +90,13 @@ def test_status_reports_data_checks_and_queued_jobs(db_session: Session) -> None
     assert status[League.SERIE_A].queued
     assert not status[League.SERIE_A].has_data
     summary = sync.sync_status(db_session, NOW)
-    assert summary.queue.todo == 2
+    assert summary.queue.todo == 3  # Serie A league + its Polymarket prices + one match
     assert summary.match_details_queued == 1
 
 
 def test_refresh_queues_current_season_once(db_session: Session) -> None:
-    assert sync.refresh(db_session, NOW, list(League)) == len(League)
+    # One Understat job and one Polymarket job per league.
+    assert sync.refresh(db_session, NOW, list(League)) == 2 * len(League)
     assert sync.refresh(db_session, NOW, [League.EPL]) == 0
 
     locks = pending_queueing_locks(db_session, "understat:league:")
@@ -158,8 +160,9 @@ def test_sync_endpoints(client: TestClient) -> None:
     assert status["first_season"] == 2014
     assert len(status["leagues"]) == len(League)
 
-    assert client.post("/api/sync/refresh", json={"leagues": ["EPL"]}).json() == {"queued": 1}
-    assert client.post("/api/sync/refresh", json={}).json() == {"queued": len(League) - 1}
+    assert client.post("/api/sync/refresh", json={"leagues": ["EPL"]}).json() == {"queued": 2}
+    rest = client.post("/api/sync/refresh", json={}).json()
+    assert rest == {"queued": 2 * (len(League) - 1)}
     queued = client.post("/api/sync/history", json={"leagues": ["EPL"], "from_season": 2014})
     current = status["current_season"]
     assert queued.json() == {"queued": current - 2014}  # the current season is already queued
@@ -185,7 +188,10 @@ def test_serve_runs_a_worker_while_the_app_is_up(
             )
 
     before = online()
-    with TestClient(create_app(committed, web_dir=None, run_worker=True)) as client:
+    # Only an unused queue: periodic tasks that ticked in the last minutes are deferred at
+    # startup, and running them for real would fetch from Understat during the test run.
+    app = create_app(committed, web_dir=None, run_worker=True, worker_queues=["test-idle"])
+    with TestClient(app) as client:
         deadline = time.monotonic() + 10
         while client.get("/api/sync").json()["workers_online"] <= before:
             assert time.monotonic() < deadline, "embedded worker never came online"

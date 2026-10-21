@@ -32,6 +32,7 @@ def test_periodic_tasks_are_registered() -> None:
 
     assert schedules == {
         "ingest:understat_refresh_current_season": "17 */6 * * *",
+        "ingest:polymarket_refresh": "7 */2 * * *",
         "ops:dq_checks": "41 * * * *",
     }
 

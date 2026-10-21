@@ -2,11 +2,12 @@
 
 import asyncio
 import contextlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from procrastinate.app import WorkerOptions
 from sqlalchemy.orm import Session, sessionmaker
 
 from edgeforge.api import sync
@@ -30,14 +31,15 @@ def create_app(
     web_dir: Path | None = DEFAULT_WEB_DIR,
     *,
     run_worker: bool = False,
+    worker_queues: list[str] | None = None,
 ) -> FastAPI:
-    """With ``run_worker``, the process also runs a job worker on all queues, so data syncs
-    and the periodic refresh need no separate ``edgeforge-worker``."""
+    """With ``run_worker``, the process also runs a job worker (on ``worker_queues``, default
+    all), so data syncs and the periodic refresh need no separate ``edgeforge-worker``."""
     app = FastAPI(
         title="EdgeForge",
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
-        lifespan=_worker_lifespan if run_worker else None,
+        lifespan=_worker_lifespan(worker_queues) if run_worker else None,
     )
     app.state.session_factory = session_factory or default_session_factory()
     app.state.ratings_cache = RatingsCache()
@@ -48,23 +50,30 @@ def create_app(
     return app
 
 
-@contextlib.asynccontextmanager
-async def _worker_lifespan(_: FastAPI) -> AsyncIterator[None]:
-    jobs = create_jobs_app(get_settings())
-    async with jobs.open_async():
-        worker = asyncio.create_task(
-            jobs.run_worker_async(
-                install_signal_handlers=False, shutdown_graceful_timeout=WORKER_SHUTDOWN_TIMEOUT
-            )
-        )
-        log.info("embedded_worker_started")
-        try:
-            yield
-        finally:
-            worker.cancel()
-            with contextlib.suppress(asyncio.CancelledError):
-                await worker
-            log.info("embedded_worker_stopped")
+def _worker_lifespan(
+    queues: list[str] | None,
+) -> Callable[[FastAPI], contextlib.AbstractAsyncContextManager[None]]:
+    @contextlib.asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        jobs = create_jobs_app(get_settings())
+        async with jobs.open_async():
+            options: WorkerOptions = {
+                "install_signal_handlers": False,
+                "shutdown_graceful_timeout": WORKER_SHUTDOWN_TIMEOUT,
+            }
+            if queues is not None:
+                options["queues"] = queues
+            worker = asyncio.create_task(jobs.run_worker_async(**options))
+            log.info("embedded_worker_started")
+            try:
+                yield
+            finally:
+                worker.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await worker
+                log.info("embedded_worker_stopped")
+
+    return lifespan
 
 
 def _serve_web(app: FastAPI, root: Path) -> None:

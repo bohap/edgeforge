@@ -22,6 +22,7 @@ class LeagueSyncOut(Model):
     last_checked_at: datetime | None
     last_check_failed: bool
     queued: bool
+    odds_checked_at: datetime | None
 
 
 class QueueOut(Model):

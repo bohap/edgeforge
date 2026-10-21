@@ -1,0 +1,1902 @@
+[
+{
+"slug": "epl-che-hul-2026-09-12-total-corners",
+"title": "Chelsea FC vs. Hull City AFC - Total Corners",
+"startTime": "2026-09-12T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-new-hul-2026-09-19-total-corners",
+"title": "Newcastle United FC vs. Hull City AFC - Total Corners",
+"startTime": "2026-09-19T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "home"
+},
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-bre-2026-10-10-total-corners",
+"title": "Aston Villa FC vs. Brentford FC - Total Corners",
+"startTime": "2026-10-10T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-ful-2026-10-10-total-corners",
+"title": "Ipswich Town FC vs. Fulham FC - Total Corners",
+"startTime": "2026-10-10T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23",
+"title": "Ipswich Town FC vs. Nottingham Forest FC",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-halftime-result",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - Halftime Result",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-second-half-result",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - Second Half Result",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-exact-score",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - Exact Score",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-first-to-score",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - First Team to Score",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-total-corners",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - Total Corners",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-more-markets",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - More Markets",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-bri-2026-10-10-player-props",
+"title": "Sunderland AFC vs. Brighton & Hove Albion FC - Player Props",
+"startTime": "2026-10-10T14:00:00Z",
+"gameId": 90114121,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-tot-2026-10-10-player-props",
+"title": "Manchester United FC vs. Tottenham Hotspur FC - Player Props",
+"startTime": "2026-10-10T16:30:00Z",
+"gameId": 90114124,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24",
+"title": "Aston Villa FC vs. Manchester City FC",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-halftime-result",
+"title": "Aston Villa FC vs. Manchester City FC - Halftime Result",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-second-half-result",
+"title": "Aston Villa FC vs. Manchester City FC - Second Half Result",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-exact-score",
+"title": "Aston Villa FC vs. Manchester City FC - Exact Score",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-first-to-score",
+"title": "Aston Villa FC vs. Manchester City FC - First Team to Score",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24",
+"title": "Arsenal FC vs. Everton FC",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-halftime-result",
+"title": "Arsenal FC vs. Everton FC - Halftime Result",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-second-half-result",
+"title": "Arsenal FC vs. Everton FC - Second Half Result",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-exact-score",
+"title": "Arsenal FC vs. Everton FC - Exact Score",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-first-to-score",
+"title": "Arsenal FC vs. Everton FC - First Team to Score",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24",
+"title": "Coventry City FC vs. Fulham FC",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-halftime-result",
+"title": "Coventry City FC vs. Fulham FC - Halftime Result",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-second-half-result",
+"title": "Coventry City FC vs. Fulham FC - Second Half Result",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-exact-score",
+"title": "Coventry City FC vs. Fulham FC - Exact Score",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-first-to-score",
+"title": "Coventry City FC vs. Fulham FC - First Team to Score",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24",
+"title": "Chelsea FC vs. Tottenham Hotspur FC",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-halftime-result",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - Halftime Result",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-second-half-result",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - Second Half Result",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-exact-score",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - Exact Score",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-first-to-score",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - First Team to Score",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-total-corners",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - Total Corners",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-total-corners",
+"title": "Coventry City FC vs. Fulham FC - Total Corners",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-total-corners",
+"title": "Arsenal FC vs. Everton FC - Total Corners",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-total-corners",
+"title": "Aston Villa FC vs. Manchester City FC - Total Corners",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-tot-2026-10-24-more-markets",
+"title": "Chelsea FC vs. Tottenham Hotspur FC - More Markets",
+"startTime": "2026-10-24T16:30:00Z",
+"gameId": 90114143,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Tottenham Hotspur FC",
+"alias": "Spurs",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-ful-2026-10-24-more-markets",
+"title": "Coventry City FC vs. Fulham FC - More Markets",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114146,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Fulham FC",
+"alias": "Fulham",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ars-eve-2026-10-24-more-markets",
+"title": "Arsenal FC vs. Everton FC - More Markets",
+"startTime": "2026-10-24T14:00:00Z",
+"gameId": 90114142,
+"closed": false,
+"teams": [
+{
+"name": "Arsenal FC",
+"alias": "Arsenal",
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ast-mac-2026-10-24-more-markets",
+"title": "Aston Villa FC vs. Manchester City FC - More Markets",
+"startTime": "2026-10-24T11:30:00Z",
+"gameId": 90114139,
+"closed": false,
+"teams": [
+{
+"name": "Aston Villa FC",
+"alias": "Villa",
+"ordering": "home"
+},
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-not-2026-10-11-player-props",
+"title": "Crystal Palace FC vs. Nottingham Forest FC - Player Props",
+"startTime": "2026-10-11T13:00:00Z",
+"gameId": 90114127,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-eve-2026-10-11-player-props",
+"title": "Hull City AFC vs. Everton FC - Player Props",
+"startTime": "2026-10-11T13:00:00Z",
+"gameId": 90114128,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Everton FC",
+"alias": "Everton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25",
+"title": "Crystal Palace FC vs. Newcastle United FC",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-halftime-result",
+"title": "Crystal Palace FC vs. Newcastle United FC - Halftime Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-second-half-result",
+"title": "Crystal Palace FC vs. Newcastle United FC - Second Half Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-exact-score",
+"title": "Crystal Palace FC vs. Newcastle United FC - Exact Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-first-to-score",
+"title": "Crystal Palace FC vs. Newcastle United FC - First Team to Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-halftime-result",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - Halftime Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-second-half-result",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - Second Half Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-exact-score",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - Exact Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-first-to-score",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - First Team to Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25",
+"title": "Manchester United FC vs. AFC Bournemouth",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-halftime-result",
+"title": "Manchester United FC vs. AFC Bournemouth - Halftime Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-second-half-result",
+"title": "Manchester United FC vs. AFC Bournemouth - Second Half Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-exact-score",
+"title": "Manchester United FC vs. AFC Bournemouth - Exact Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-first-to-score",
+"title": "Manchester United FC vs. AFC Bournemouth - First Team to Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25",
+"title": "Hull City AFC vs. Brentford FC",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-halftime-result",
+"title": "Hull City AFC vs. Brentford FC - Halftime Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-second-half-result",
+"title": "Hull City AFC vs. Brentford FC - Second Half Result",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-exact-score",
+"title": "Hull City AFC vs. Brentford FC - Exact Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-first-to-score",
+"title": "Hull City AFC vs. Brentford FC - First Team to Score",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25",
+"title": "Sunderland AFC vs. Leeds United FC",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-halftime-result",
+"title": "Sunderland AFC vs. Leeds United FC - Halftime Result",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-second-half-result",
+"title": "Sunderland AFC vs. Leeds United FC - Second Half Result",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-exact-score",
+"title": "Sunderland AFC vs. Leeds United FC - Exact Score",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-first-to-score",
+"title": "Sunderland AFC vs. Leeds United FC - First Team to Score",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-total-corners",
+"title": "Sunderland AFC vs. Leeds United FC - Total Corners",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-total-corners",
+"title": "Hull City AFC vs. Brentford FC - Total Corners",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-total-corners",
+"title": "Manchester United FC vs. AFC Bournemouth - Total Corners",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-total-corners",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - Total Corners",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-total-corners",
+"title": "Crystal Palace FC vs. Newcastle United FC - Total Corners",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": null,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-sun-lee-2026-10-25-more-markets",
+"title": "Sunderland AFC vs. Leeds United FC - More Markets",
+"startTime": "2026-10-25T16:30:00Z",
+"gameId": 90114141,
+"closed": false,
+"teams": [
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "home"
+},
+{
+"name": "Leeds United FC",
+"alias": "Leeds",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-bre-2026-10-25-more-markets",
+"title": "Hull City AFC vs. Brentford FC - More Markets",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114148,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Brentford FC",
+"alias": "Brentford",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mun-bou-2026-10-25-more-markets",
+"title": "Manchester United FC vs. AFC Bournemouth - More Markets",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114144,
+"closed": false,
+"teams": [
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "home"
+},
+{
+"name": "AFC Bournemouth",
+"alias": "Bournemouth",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-liv-bri-2026-10-25-more-markets",
+"title": "Liverpool FC vs. Brighton & Hove Albion FC - More Markets",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114140,
+"closed": false,
+"teams": [
+{
+"name": "Liverpool FC",
+"alias": "Liverpool",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cry-new-2026-10-25-more-markets",
+"title": "Crystal Palace FC vs. Newcastle United FC - More Markets",
+"startTime": "2026-10-25T14:00:00Z",
+"gameId": 90114147,
+"closed": false,
+"teams": [
+{
+"name": "Crystal Palace FC",
+"alias": "Palace",
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-new-2026-10-12-player-props",
+"title": "Coventry City FC vs. Newcastle United FC - Player Props",
+"startTime": "2026-10-12T19:00:00Z",
+"gameId": 90114126,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Newcastle United FC",
+"alias": "Newcastle",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-first-half-exact-score",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - 1st Half Exact Score",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-first-half-first-to-score",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - 1st Half First Team to Score",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-ips-not-2026-10-23-second-half-first-to-score",
+"title": "Ipswich Town FC vs. Nottingham Forest FC - 2nd Half First Team to Score",
+"startTime": "2026-10-23T19:00:00Z",
+"gameId": 90114145,
+"closed": false,
+"teams": [
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "home"
+},
+{
+"name": "Nottingham Forest FC",
+"alias": "Forest",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-mun-2026-10-31",
+"title": "Chelsea FC vs. Manchester United FC",
+"startTime": "2026-10-31T12:30:00Z",
+"gameId": 90114153,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-mun-2026-10-31-halftime-result",
+"title": "Chelsea FC vs. Manchester United FC - Halftime Result",
+"startTime": "2026-10-31T12:30:00Z",
+"gameId": 90114153,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-mun-2026-10-31-second-half-result",
+"title": "Chelsea FC vs. Manchester United FC - Second Half Result",
+"startTime": "2026-10-31T12:30:00Z",
+"gameId": 90114153,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-mun-2026-10-31-exact-score",
+"title": "Chelsea FC vs. Manchester United FC - Exact Score",
+"startTime": "2026-10-31T12:30:00Z",
+"gameId": 90114153,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-che-mun-2026-10-31-first-to-score",
+"title": "Chelsea FC vs. Manchester United FC - First Team to Score",
+"startTime": "2026-10-31T12:30:00Z",
+"gameId": 90114153,
+"closed": false,
+"teams": [
+{
+"name": "Chelsea FC",
+"alias": "Chelsea",
+"ordering": "home"
+},
+{
+"name": "Manchester United FC",
+"alias": "Man Utd",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-sun-2026-10-31",
+"title": "Coventry City FC vs. Sunderland AFC",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114156,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-sun-2026-10-31-halftime-result",
+"title": "Coventry City FC vs. Sunderland AFC - Halftime Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114156,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-sun-2026-10-31-second-half-result",
+"title": "Coventry City FC vs. Sunderland AFC - Second Half Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114156,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-sun-2026-10-31-exact-score",
+"title": "Coventry City FC vs. Sunderland AFC - Exact Score",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114156,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-cov-sun-2026-10-31-first-to-score",
+"title": "Coventry City FC vs. Sunderland AFC - First Team to Score",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114156,
+"closed": false,
+"teams": [
+{
+"name": "Coventry City FC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Sunderland AFC",
+"alias": "Sunderland",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mac-bri-2026-10-31",
+"title": "Manchester City FC vs. Brighton & Hove Albion FC",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114151,
+"closed": false,
+"teams": [
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mac-bri-2026-10-31-halftime-result",
+"title": "Manchester City FC vs. Brighton & Hove Albion FC - Halftime Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114151,
+"closed": false,
+"teams": [
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mac-bri-2026-10-31-second-half-result",
+"title": "Manchester City FC vs. Brighton & Hove Albion FC - Second Half Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114151,
+"closed": false,
+"teams": [
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mac-bri-2026-10-31-exact-score",
+"title": "Manchester City FC vs. Brighton & Hove Albion FC - Exact Score",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114151,
+"closed": false,
+"teams": [
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-mac-bri-2026-10-31-first-to-score",
+"title": "Manchester City FC vs. Brighton & Hove Albion FC - First Team to Score",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114151,
+"closed": false,
+"teams": [
+{
+"name": "Manchester City FC",
+"alias": "Man City",
+"ordering": "home"
+},
+{
+"name": "Brighton & Hove Albion FC",
+"alias": "Brighton",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-ips-2026-10-31",
+"title": "Hull City AFC vs. Ipswich Town FC",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114157,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-ips-2026-10-31-halftime-result",
+"title": "Hull City AFC vs. Ipswich Town FC - Halftime Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114157,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "away"
+}
+]
+},
+{
+"slug": "epl-hul-ips-2026-10-31-second-half-result",
+"title": "Hull City AFC vs. Ipswich Town FC - Second Half Result",
+"startTime": "2026-10-31T15:00:00Z",
+"gameId": 90114157,
+"closed": false,
+"teams": [
+{
+"name": "Hull City AFC",
+"alias": null,
+"ordering": "home"
+},
+{
+"name": "Ipswich Town FC",
+"alias": "Ipswich",
+"ordering": "away"
+}
+]
+}
+]
