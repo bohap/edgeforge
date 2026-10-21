@@ -114,6 +114,8 @@ const COMPARISON: Comparison = {
     likely_score: [1, 1],
     likely_score_probability: 0.118,
   },
+  kickoff_at: null,
+  polymarket: null,
 };
 
 async function render(comparison: Comparison) {
@@ -176,5 +178,42 @@ describe('ComparePage', () => {
       (r: Element) => r.textContent,
     );
     expect(cells.find((c) => c?.includes('Both teams scored'))).toContain('2 of 10');
+  });
+
+  it('shows Polymarket prices and the fixture kickoff when available', async () => {
+    const page = await render({
+      ...COMPARISON,
+      kickoff_at: '2026-10-23T19:00:00Z',
+      polymarket: {
+        url: 'https://polymarket.com/event/epl-ars-lee-2026-10-23',
+        observed_at: '2026-10-21T06:00:00Z',
+        sides: [
+          {
+            market_code: 'MATCH_RESULT',
+            params: {},
+            outcome: 'HOME',
+            negated: false,
+            price: 0.55,
+            odds: 1.78,
+            market_probability: 0.545,
+            model_probability: 0.564,
+            edge: 0.004,
+            liquidity: 1000,
+            url: 'https://polymarket.com/event/epl-ars-lee-2026-10-23',
+          },
+        ],
+      },
+    });
+    const el: HTMLElement = page.nativeElement;
+
+    expect(el.textContent).toContain('Polymarket');
+    expect(el.textContent).toContain('Arsenal win');
+    expect(el.textContent).toContain('23 Oct');
+    expect(el.querySelector('a.external')?.getAttribute('href')).toContain('polymarket.com');
+  });
+
+  it('leaves the Polymarket card out without prices', async () => {
+    const page = await render(COMPARISON);
+    expect(page.nativeElement.querySelector('app-markets')).toBeNull();
   });
 });

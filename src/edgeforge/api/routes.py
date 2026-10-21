@@ -7,7 +7,9 @@ from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
+import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from numpy.typing import NDArray
 from sqlalchemy.orm import Session, sessionmaker
 
 from edgeforge.api.schemas import (
@@ -16,7 +18,9 @@ from edgeforge.api.schemas import (
     EstimateOut,
     FixtureOut,
     FormWindowOut,
+    MarketSideOut,
     MeetingOut,
+    PolymarketOut,
     TeamMatchOut,
     TeamOut,
     TeamSideOut,
@@ -24,10 +28,17 @@ from edgeforge.api.schemas import (
 from edgeforge.catalog.models import Competition
 from edgeforge.catalog.reference import competition_by_code, enabled_competitions
 from edgeforge.compare.form import TeamMatch, Venue
-from edgeforge.compare.service import FormWindow, compare_match, fit_ratings
+from edgeforge.compare.service import FormWindow, compare_match, fit_ratings, next_meeting
+from edgeforge.compare.value import priced_sides
 from edgeforge.features.gateway import upcoming_fixtures
 from edgeforge.football.teams import competition_teams, team_names
+from edgeforge.marketdata.quotes import match_quotes
 from edgeforge.models.football_goals.model import GoalRatings
+from edgeforge.providers.polymarket.client import (
+    MORE_MARKETS_SUFFIX,
+    event_page_url,
+)
+from edgeforge.providers.polymarket.client import PROVIDER_CODE as POLYMARKET
 
 router = APIRouter(prefix="/api")
 
@@ -153,6 +164,14 @@ def compare(
     )
     opponents = {m.opponent_id for m in comparison.home_recent + comparison.away_recent}
     names |= team_names(session, opponents - names.keys())
+    fixture = next_meeting(session, competition.id, home, away, moment)
+    # Prices are read at the exact time asked (now by default), not the hour the model uses.
+    prices_at = datetime.now(UTC) if as_of is None else moment
+    polymarket = None
+    if fixture is not None and comparison.estimate is not None and ratings is not None:
+        polymarket = _polymarket(
+            session, fixture.match_id, ratings.score_matrix(home, away), prices_at
+        )
 
     return ComparisonOut(
         as_of=moment,
@@ -171,6 +190,40 @@ def compare(
         ),
         head_to_head=[_meeting(m, names) for m in comparison.head_to_head],
         estimate=(EstimateOut.model_validate(comparison.estimate) if comparison.estimate else None),
+        kickoff_at=fixture.kickoff_at if fixture else None,
+        polymarket=polymarket,
+    )
+
+
+def _polymarket(
+    session: Session, match_id: uuid.UUID, matrix: NDArray[np.float64], as_of: datetime
+) -> PolymarketOut | None:
+    quotes = match_quotes(session, match_id, POLYMARKET, as_of)
+    if not quotes:
+        return None
+    main = next(
+        (q.event_slug for q in quotes if q.market_code == "MATCH_RESULT"),
+        quotes[0].event_slug.removesuffix(MORE_MARKETS_SUFFIX),
+    )
+    return PolymarketOut(
+        url=event_page_url(main),
+        observed_at=max(q.observed_at for q in quotes),
+        sides=[
+            MarketSideOut(
+                market_code=s.market_code,
+                params=s.params,
+                outcome=s.outcome,
+                negated=s.negated,
+                price=s.price,
+                odds=s.odds,
+                market_probability=s.market_probability,
+                model_probability=s.model_probability,
+                edge=s.edge,
+                liquidity=s.liquidity,
+                url=event_page_url(s.event_slug),
+            )
+            for s in priced_sides(matrix, quotes)
+        ],
     )
 
 

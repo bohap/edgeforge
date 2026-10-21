@@ -1,5 +1,5 @@
 from collections.abc import Iterator
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -10,7 +10,9 @@ from sqlalchemy.orm import Session, sessionmaker
 from edgeforge.api.app import create_app
 from edgeforge.catalog.models import ProviderKind
 from edgeforge.catalog.reference import ensure_provider
+from edgeforge.features.gateway import upcoming_fixtures
 from edgeforge.football.teams import find_team
+from edgeforge.marketdata.models import MarketQuote
 from edgeforge.providers.understat.normalize import normalize_league_payload
 from edgeforge.raw.blobstore import PostgresBlobStore
 from edgeforge.raw.models import RawPayload
@@ -107,3 +109,80 @@ def test_compare_rejects_bad_requests(client: TestClient, db_session: Session) -
     )
     assert bad_window.status_code == 422
     assert client.get("/api/competitions/XX/teams").status_code == 404
+
+
+def test_compare_includes_polymarket_prices(client: TestClient, db_session: Session) -> None:
+    as_of = datetime(2026, 3, 1, tzinfo=UTC)
+    fixture = upcoming_fixtures(db_session, as_of, as_of + timedelta(days=14))[0]
+    provider = ensure_provider(db_session, "polymarket", ProviderKind.MARKET)
+    raw = record_payload(
+        db_session,
+        PostgresBlobStore(db_session),
+        provider_id=provider.id,
+        resource="events",
+        key="games/EPL/0",
+        url="https://gamma-api.polymarket.com/events",
+        http_status=200,
+        body=b"[]",
+        fetched_at=as_of - timedelta(hours=1),
+    )
+    for code, params, outcome, bid, ask, slug in (
+        ("MATCH_RESULT", {}, "HOME", 0.44, 0.45, "epl-x-y"),
+        ("TOTAL_GOALS", {"line": 2.5}, "OVER", 0.54, 0.56, "epl-x-y-more-markets"),
+        ("TOTAL_GOALS", {"line": 7.5}, "OVER", None, 0.5, "epl-x-y-more-markets"),
+    ):
+        db_session.add(
+            MarketQuote(
+                match_id=fixture.match_id,
+                provider_id=provider.id,
+                market_code=code,
+                params_key=";".join(f"{k}={v}" for k, v in sorted(params.items())),
+                outcome=outcome,
+                params=params,
+                best_bid=bid,
+                best_ask=ask,
+                last_price=None,
+                liquidity=500.0,
+                fee_rate=0.05,
+                external_id="0xabc",
+                event_slug=slug,
+                source_raw_id=raw.payload_id,
+                observed_at=as_of - timedelta(hours=1),
+            )
+        )
+    db_session.flush()
+
+    body = client.get(
+        "/api/competitions/EPL/compare",
+        params={
+            "home": str(fixture.home_team_id),
+            "away": str(fixture.away_team_id),
+            "as_of": as_of.isoformat(),
+        },
+    ).json()
+
+    assert body["kickoff_at"] == fixture.kickoff_at.isoformat().replace("+00:00", "Z")
+    pm = body["polymarket"]
+    assert pm["url"] == "https://polymarket.com/event/epl-x-y"
+    sides = {(s["market_code"], s["outcome"], s["negated"]): s for s in pm["sides"]}
+    assert set(sides) == {
+        ("MATCH_RESULT", "HOME", False),
+        ("MATCH_RESULT", "HOME", True),
+        ("TOTAL_GOALS", "OVER", False),
+        ("TOTAL_GOALS", "OVER", True),
+    }  # the 7.5 line has no bid, so no usable price
+    over = sides[("TOTAL_GOALS", "OVER", False)]
+    assert over["url"] == "https://polymarket.com/event/epl-x-y-more-markets"
+    assert over["market_probability"] == pytest.approx(0.55)
+    assert 0 < over["model_probability"] < 1
+    assert over["edge"] == pytest.approx(over["model_probability"] * over["odds"] - 1)
+
+    earlier = client.get(
+        "/api/competitions/EPL/compare",
+        params={
+            "home": str(fixture.home_team_id),
+            "away": str(fixture.away_team_id),
+            "as_of": (as_of - timedelta(hours=2)).isoformat(),
+        },
+    ).json()
+    assert earlier["polymarket"] is None  # the quotes were not known yet

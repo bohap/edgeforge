@@ -81,6 +81,29 @@ export interface TeamSide {
   recent: TeamMatch[];
 }
 
+/** One side of a Polymarket market, priced by the model. */
+export interface MarketSide {
+  market_code: 'MATCH_RESULT' | 'WIN_MARGIN' | 'TOTAL_GOALS' | 'BTTS' | 'TEAM_TOTAL';
+  params: { line?: number; side?: 'home' | 'away'; min_margin?: number };
+  outcome: string;
+  negated: boolean;
+  price: number;
+  /** Decimal odds after Polymarket's taker fee. */
+  odds: number;
+  market_probability: number;
+  model_probability: number;
+  /** Model's expected return per unit staked: model_probability × odds − 1. */
+  edge: number;
+  liquidity: number | null;
+  url: string;
+}
+
+export interface Polymarket {
+  url: string;
+  observed_at: string;
+  sides: MarketSide[];
+}
+
 export interface Comparison {
   as_of: string;
   competition: Competition;
@@ -88,6 +111,8 @@ export interface Comparison {
   away: TeamSide;
   head_to_head: Meeting[];
   estimate: Estimate | null;
+  kickoff_at: string | null;
+  polymarket: Polymarket | null;
 }
 
 export const api = {

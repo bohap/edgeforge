@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -91,6 +92,29 @@ class EstimateOut(Model):
     likely_score_probability: float
 
 
+class MarketSideOut(Model):
+    """One side of a Polymarket market: buy price, decimal odds after the taker fee, the
+    market's (mid) and the model's probability, and the model's expected return per unit."""
+
+    market_code: str
+    params: dict[str, Any]
+    outcome: str
+    negated: bool
+    price: float
+    odds: float
+    market_probability: float
+    model_probability: float
+    edge: float
+    liquidity: float | None
+    url: str
+
+
+class PolymarketOut(Model):
+    url: str
+    observed_at: datetime
+    sides: list[MarketSideOut]
+
+
 class TeamSideOut(Model):
     team: TeamOut
     last_played: datetime | None
@@ -105,3 +129,5 @@ class ComparisonOut(Model):
     away: TeamSideOut
     head_to_head: list[MeetingOut]
     estimate: EstimateOut | None
+    kickoff_at: datetime | None = None
+    polymarket: PolymarketOut | None = None

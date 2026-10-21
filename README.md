@@ -228,3 +228,10 @@ after a match they hold the last pre-match prices.
 
 Prices refresh every 2 hours, and with the league's results whenever you press Refresh on the
 Data page.
+
+The match page shows every usable price next to the model: decimal odds after Polymarket's
+taker fee (`rate × p × (1 − p)` per share), Polymarket's probability (the middle of the
+book), the model's probability from the same score matrix as the estimate, and the model
+edge (`model probability × odds − 1`). Rows with a positive edge are tagged by odds range
+(1.7+ "value", 1.5–1.7), and each links to its market on polymarket.com. Books wider than
+10 points or priced below 2% or above 98% are left out.
