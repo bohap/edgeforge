@@ -188,7 +188,10 @@ def test_serve_runs_a_worker_while_the_app_is_up(
             )
 
     before = online()
-    with TestClient(create_app(committed, web_dir=None, run_worker=True)) as client:
+    # Only an unused queue: periodic tasks that ticked in the last minutes are deferred at
+    # startup, and running them for real would fetch from Understat during the test run.
+    app = create_app(committed, web_dir=None, run_worker=True, worker_queues=["test-idle"])
+    with TestClient(app) as client:
         deadline = time.monotonic() + 10
         while client.get("/api/sync").json()["workers_online"] <= before:
             assert time.monotonic() < deadline, "embedded worker never came online"
