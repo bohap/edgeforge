@@ -10,11 +10,13 @@ from sqlalchemy.orm import Session
 
 from edgeforge.compare.form import FormSummary, TeamMatch, Venue, head_to_head, summarize
 from edgeforge.compare.form import team_matches as team_matches_of
-from edgeforge.features.gateway import played_matches
+from edgeforge.features.gateway import Fixture, played_matches, upcoming_fixtures
 from edgeforge.markets.football import MARKET_TYPES, price
 from edgeforge.models.football_goals.model import GoalModelConfig, GoalRatings, fit
 
 MODEL_HISTORY = timedelta(days=3 * 365)
+RECENT_KICKOFF = timedelta(hours=3)
+FIXTURE_HORIZON = timedelta(days=60)
 MIN_TRAINING_MATCHES = 50
 
 
@@ -132,3 +134,20 @@ def form_windows(
     """Summaries of the newest ``n`` matches (newest first) overall and at ``venue``."""
     at_venue = [m for m in matches if m.venue is venue]
     return [FormWindow(n, summarize(matches[:n]), summarize(at_venue[:n])) for n in windows]
+
+
+def next_meeting(
+    session: Session,
+    competition_id: uuid.UUID,
+    home_team_id: uuid.UUID,
+    away_team_id: uuid.UUID,
+    as_of: datetime,
+) -> Fixture | None:
+    """The next scheduled fixture between the two teams at this venue, including one that
+    kicked off in the last few hours."""
+    for fixture in upcoming_fixtures(
+        session, as_of - RECENT_KICKOFF, as_of + FIXTURE_HORIZON, competition_id=competition_id
+    ):
+        if (fixture.home_team_id, fixture.away_team_id) == (home_team_id, away_team_id):
+            return fixture
+    return None

@@ -1,0 +1,93 @@
+<section class="card">
+  <div class="section-head">
+    <h2>Polymarket</h2>
+    <a class="external" [href]="polymarket().url" target="_blank" rel="noopener">
+      Open on Polymarket ↗
+    </a>
+  </div>
+  <div class="section-head">
+    <p class="muted">Prices from {{ polymarket().observed_at | date: 'EEE d MMM, HH:mm' }}</p>
+    <div class="segmented" role="group" aria-label="Which prices">
+      <button
+        type="button"
+        [class.active]="filter() === 'interesting'"
+        [attr.aria-pressed]="filter() === 'interesting'"
+        (click)="filter.set('interesting')"
+      >
+        Odds {{ MAYBE_ODDS }}+
+      </button>
+      <button
+        type="button"
+        [class.active]="filter() === 'edge'"
+        [attr.aria-pressed]="filter() === 'edge'"
+        (click)="filter.set('edge')"
+      >
+        Model edge
+      </button>
+      <button
+        type="button"
+        [class.active]="filter() === 'all'"
+        [attr.aria-pressed]="filter() === 'all'"
+        (click)="filter.set('all')"
+      >
+        All
+      </button>
+    </div>
+  </div>
+
+  @if (groups().length > 0) {
+    <table class="market-table">
+      <thead>
+        <tr>
+          <th scope="col"><span class="visually-hidden">Selection</span></th>
+          <th scope="col">Odds</th>
+          <th scope="col">Polymarket</th>
+          <th scope="col">Model</th>
+          <th scope="col">Model edge</th>
+          <th scope="col"><span class="visually-hidden">Link</span></th>
+        </tr>
+      </thead>
+      @for (group of groups(); track group.code) {
+        <tbody>
+          <tr class="group">
+            <th scope="rowgroup" colspan="6">{{ group.title }}</th>
+          </tr>
+          @for (s of group.sides; track $index) {
+            <tr [class]="tier(s) ? 'tier-' + tier(s) : ''">
+              <th scope="row">
+                {{ label(s) }}
+                @if (tier(s) === 'value') {
+                  <span class="tag value">value</span>
+                } @else if (tier(s) === 'maybe') {
+                  <span class="tag maybe">{{ MAYBE_ODDS }}–{{ VALUE_ODDS }}</span>
+                }
+              </th>
+              <td class="num">{{ decimal(s.odds) }}</td>
+              <td class="num">{{ percent(s.market_probability) }}</td>
+              <td class="num">{{ percent(s.model_probability) }}</td>
+              <td class="num" [class.pos]="s.edge > 0" [class.neg]="s.edge <= 0">
+                {{ s.edge > 0 ? '+' : '' }}{{ percent(s.edge) }}
+              </td>
+              <td class="link">
+                <a [href]="s.url" target="_blank" rel="noopener" aria-label="Open on Polymarket"
+                  >↗</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      }
+    </table>
+  } @else {
+    <p class="muted">No prices match this filter.</p>
+  }
+
+  <p class="note">
+    Odds are what Polymarket charges to buy now, after its taker fee. Polymarket % is the middle of
+    its order book; Model % comes from the estimate above. Model edge is model % × odds − 1:
+    positive means the model rates the outcome above its price. Tagged rows have a positive model
+    edge at odds of {{ VALUE_ODDS }}+ (value) or {{ MAYBE_ODDS }}–{{ VALUE_ODDS }}. In backtests the
+    model did not beat bookmakers' closing prices, so read an edge as a disagreement to look into,
+    not as a certainty.
+  </p>
+</section>

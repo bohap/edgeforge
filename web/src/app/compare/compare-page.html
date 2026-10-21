@@ -14,8 +14,8 @@
     </div>
     <p class="muted">
       {{ c.competition.name }}
-      @if (kickoff()) {
-        · {{ kickoff() | date: 'EEE d MMM, HH:mm' }}
+      @if (c.kickoff_at ?? kickoff(); as k) {
+        · {{ k | date: 'EEE d MMM, HH:mm' }}
       }
       · data up to
       {{ c.home.last_played ? (c.home.last_played | date: 'd MMM') : '–' }} /
@@ -78,6 +78,10 @@
       <p class="muted">Not available: too little data for one of the teams in this competition.</p>
     }
   </section>
+
+  @if (c.polymarket; as pm) {
+    <app-markets [polymarket]="pm" [home]="c.home.team.name" [away]="c.away.team.name" />
+  }
 
   <section class="card">
     <div class="section-head">

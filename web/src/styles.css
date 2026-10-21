@@ -13,6 +13,7 @@
   --loss: #d64545;
   --better: #1f9d57;
   --error: #b42318;
+  --draw-warn: #c27c0e;
   --radius: 10px;
   font-family:
     Inter,
@@ -43,6 +44,7 @@
     --loss: #f06464;
     --better: #3cc47a;
     --error: #ff8a80;
+    --draw-warn: #e0a030;
   }
 }
 
@@ -246,6 +248,98 @@ button.link:disabled {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.external {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.market-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.market-table th,
+.market-table td {
+  padding: 7px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.market-table thead th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.market-table tr.group th {
+  padding-top: 16px;
+  font-weight: 700;
+  border-bottom-color: var(--border);
+}
+
+.market-table tbody th {
+  font-weight: 400;
+}
+
+.market-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.market-table thead th:not(:first-child) {
+  text-align: right;
+}
+
+.market-table .pos {
+  color: var(--better);
+  font-weight: 700;
+}
+
+.market-table .neg {
+  color: var(--muted);
+}
+
+.market-table .link {
+  text-align: right;
+  width: 1.5rem;
+}
+
+.market-table tr.tier-value {
+  background: color-mix(in srgb, var(--win) 10%, transparent);
+}
+
+.market-table tr.tier-maybe {
+  background: color-mix(in srgb, var(--draw-warn) 12%, transparent);
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  vertical-align: 1px;
+}
+
+.tag.value {
+  background: var(--win);
+}
+
+.tag.maybe {
+  background: var(--draw-warn);
+}
+
+@media (max-width: 520px) {
+  .market-table thead th:nth-child(3),
+  .market-table td:nth-child(3) {
+    display: none;
+  }
 }
 
 .footer {

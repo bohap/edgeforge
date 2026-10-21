@@ -4,6 +4,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { api, Comparison, decimal, Form, percent } from '../api';
+import { Markets } from './markets';
 
 export const WINDOWS = [5, 10, 20];
 
@@ -86,7 +87,7 @@ export function betterSide(
 @Component({
   selector: 'app-compare-page',
   host: { class: 'page' },
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, Markets],
   templateUrl: './compare-page.html',
 })
 export class ComparePage {
