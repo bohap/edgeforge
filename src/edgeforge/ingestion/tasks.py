@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from edgeforge.core.config import get_settings
 from edgeforge.core.db import default_session_factory
-from edgeforge.ingestion import football_data, understat
+from edgeforge.ingestion import football_data, polymarket, understat
 from edgeforge.ops.job_runs import run_tracked
 from edgeforge.providers.http import FetchPolicy, HttpFetcher
 from edgeforge.providers.ratelimit import RateLimiter
@@ -25,6 +25,11 @@ def understat_fetcher() -> HttpFetcher:
     return HttpFetcher(
         httpx.Client(timeout=30), RateLimiter(settings.understat_requests_per_second)
     )
+
+
+@lru_cache(maxsize=1)
+def polymarket_fetcher() -> HttpFetcher:
+    return HttpFetcher(httpx.Client(timeout=30), RateLimiter(2.0))
 
 
 @lru_cache(maxsize=1)
@@ -88,4 +93,32 @@ def understat_refresh_current_season(timestamp: int) -> dict[str, Any]:
         "ingest:understat_refresh_current_season",
         {"timestamp": timestamp},
         work,
+    )
+
+
+@blueprint.task(name="polymarket_league", queue=polymarket.QUEUE)
+def polymarket_league(competition: str) -> dict[str, Any]:
+    def work(session: Session) -> dict[str, Any]:
+        now = datetime.now(UTC)
+        return polymarket.ingest_league(session, polymarket_fetcher(), competition, now).as_dict()
+
+    return run_tracked(
+        default_session_factory(), polymarket.LEAGUE_TASK, {"competition": competition}, work
+    )
+
+
+@blueprint.periodic(cron="7 */2 * * *")
+@blueprint.task(name="polymarket_refresh", queue="ops")
+def polymarket_refresh(timestamp: int) -> dict[str, Any]:
+    """Every 2 hours: queue a Polymarket job for every league we have data for."""
+
+    def work(session: Session) -> dict[str, Any]:
+        queued = sum(
+            polymarket.enqueue_league(session, code) is not None
+            for code in polymarket.leagues_with_data(session)
+        )
+        return {"queued": queued}
+
+    return run_tracked(
+        default_session_factory(), "ingest:polymarket_refresh", {"timestamp": timestamp}, work
     )

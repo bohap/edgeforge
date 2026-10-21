@@ -171,10 +171,11 @@ tick once, even with several workers):
 | Task | Cron (UTC) | What it does |
 |------|------------|--------------|
 | `ingest:understat_refresh_current_season` | `17 */6 * * *` | queues league jobs for the current season; they queue match jobs for newly finished matches |
+| `ingest:polymarket_refresh` | `7 */2 * * *` | queues Polymarket price jobs for every league we have data for |
 | `ops:dq_checks` | `41 * * * *` | runs the data-quality checks |
 
 `edgeforge serve` runs such a worker on all queues. Without it, run
-`edgeforge-worker ops ingest-understat` (or one worker per queue).
+`edgeforge-worker ops ingest-understat ingest-polymarket` (or one worker per queue).
 
 ## Backtesting
 
@@ -213,3 +214,17 @@ bet365, Pinnacle, market average, market maximum and Betfair exchange) are store
 `mkt.historical_odds` against our matches. Load the Understat league-season first. Team
 names are resolved by fixture voting and stored in `ref.provider_entity_map`; rows that
 cannot be placed are reported, never guessed.
+
+## Polymarket prices
+
+Prices for the next week's games come from Polymarket's public API (no account or key):
+1X2, spreads (win by 2+, 3+, ...), total goals, both teams to score and each team's goals.
+A league job lists the league's open events, fetches each game's main and "More Markets"
+events, and stores the best bid and ask of every outcome in `mkt.market_quote`, keeping only
+the fields used (a few kilobytes per game). Games are matched to our fixtures by kickoff and
+team names once, then remembered in `ref.provider_entity_map`; games that cannot be matched
+clearly are reported in the job's stats, never guessed. Quotes stop updating at kickoff, so
+after a match they hold the last pre-match prices.
+
+Prices refresh every 2 hours, and with the league's results whenever you press Refresh on the
+Data page.

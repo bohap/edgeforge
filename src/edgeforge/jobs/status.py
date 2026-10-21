@@ -18,14 +18,15 @@ class QueueSummary:
     failed: int
 
 
-def queue_summary(session: Session, queue: str) -> QueueSummary:
+def queue_summary(session: Session, *queues: str) -> QueueSummary:
+    """Job counts by status across the given queues."""
     rows = session.execute(
         text(
             "SELECT status::text AS status, count(*) AS n FROM procrastinate_jobs "
-            "WHERE queue_name = :queue AND status IN ('todo', 'doing', 'failed') "
+            "WHERE queue_name = ANY(:queues) AND status IN ('todo', 'doing', 'failed') "
             "GROUP BY status"
         ),
-        {"queue": queue},
+        {"queues": list(queues)},
     ).mappings()
     counts: dict[str, int] = {str(row["status"]): int(row["n"]) for row in rows}
     return QueueSummary(
